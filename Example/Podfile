@@ -1,0 +1,6 @@
+use_frameworks!
+target 'FireStream_Tests' do
+  pod 'FireStream', :path => '../'
+  
+  
+end
