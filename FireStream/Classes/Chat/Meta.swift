@@ -16,6 +16,10 @@ public class Meta {
     internal var timestamp: Any?
     internal var wrapped = false
 
+    public init() {
+        
+    }
+
     public convenience init(name: String, imageURL: String) {
         self.init(name: name, imageURL: imageURL, data: nil)
     }
@@ -35,7 +39,7 @@ public class Meta {
         return self.name
     }
 
-    public func setName(name: String) -> Meta {
+    public func setName(_ name: String) -> Meta {
         self.name = name
         return self
     }
@@ -44,12 +48,12 @@ public class Meta {
         return self.imageURL
     }
 
-    public func setImageURL(imageURL: String) -> Meta{
+    public func setImageURL(_ imageURL: String) -> Meta{
         self.imageURL = imageURL
         return self
     }
 
-    public func setData(data: [String: Any]?) -> Meta {
+    public func setData(_ data: [String: Any]?) -> Meta {
         self.data = data
         return self
     }
@@ -73,20 +77,20 @@ public class Meta {
         return self.created
     }
 
-    public func setCreated(created: Date?) -> Meta {
+    public func setCreated(_ created: Date?) -> Meta {
         self.created = created
         return self
     }
 
-    public static func nameData(name: String) -> [String: Any] {
+    public static func nameData(_ name: String) -> [String: Any] {
         return [Keys.Name: name]
     }
 
-    public static func imageURLData(imageURL: String) -> [String: Any] {
+    public static func imageURLData(_ imageURL: String) -> [String: Any] {
         return [Keys.ImageURL: imageURL]
     }
 
-    public static func dataData(data: [String: Any]) -> [String: Any] {
+    public static func dataData(_ data: [String: Any]) -> [String: Any] {
         return [Keys.Data: data]
     }
 
@@ -118,11 +122,11 @@ public class Meta {
         return meta
     }
 
-    public static func from(name: String, imageURL: String) -> Meta {
+    public static func from(_ name: String, _ imageURL: String) -> Meta {
         return Meta(name: name, imageURL: imageURL)
     }
 
-    public static func from(name: String, imageURL: String, data: [String: Any]) -> Meta {
+    public static func from(_ name: String, _ imageURL: String, _ data: [String: Any]) -> Meta {
         return Meta(name: name, imageURL: imageURL, data: data)
     }
 
