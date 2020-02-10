@@ -30,6 +30,8 @@ TODO: Add long description of the pod here.
 
   s.ios.deployment_target = '8.0'
 
+  s.static_framework = true
+
   s.source_files = 'FireStream/Classes/**/*'
   
   # s.resource_bundles = {
