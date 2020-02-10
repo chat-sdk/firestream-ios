@@ -87,9 +87,9 @@ public class User {
     }
 
     public struct DataProvider {
-        let provideFunc: (User) -> [String: Any]
+        let provideFunc: (User?) -> [String: Any]
 
-        public func data(user: User) -> [String: Any] {
+        public func data(_ user: User?) -> [String: Any] {
             return provideFunc(user)
         }
     }
@@ -105,11 +105,11 @@ public class User {
     }
 
     public static func roleTypeDataProvider() -> DataProvider {
-        return DataProvider { ($0.roleType?.data() ?? [:]) }
+        return DataProvider { ($0?.roleType?.data() ?? [:]) }
     }
 
     public static func contactTypeDataProvider() -> DataProvider {
-        return DataProvider { ($0.contactType?.data() ?? [:]) }
+        return DataProvider { ($0?.contactType?.data() ?? [:]) }
     }
 
     public static func from(event: FireStreamEvent<ListData>) throws -> User {
