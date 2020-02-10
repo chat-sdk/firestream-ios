@@ -46,7 +46,7 @@ public class Path {
         return self.components.count
     }
 
-    public func get(index: Int) -> String? {
+    public func get(_ index: Int) -> String? {
         if (size() > index) {
             return components[index]
         }
@@ -107,7 +107,7 @@ public class Path {
      * @param component path to extend
      * @return dotted components
      */
-    public func dotPath(component: String) -> String {
+    public func dotPath(_ component: String) -> String {
         if let remainder = self.remainder {
             return remainder + "." + component
         } else {
