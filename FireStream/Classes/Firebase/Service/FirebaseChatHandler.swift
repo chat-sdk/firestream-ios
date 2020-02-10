@@ -27,7 +27,7 @@ public class FirebaseChatHandler {
      * @param chatId chat room id
      * @return stream of data when chat meta changes
      */
-    public func metaOn(chatId: String) -> Observable<Meta> {
+    public func metaOn(_ chatId: String) -> Observable<Meta> {
         return Observable.empty()
     }
 

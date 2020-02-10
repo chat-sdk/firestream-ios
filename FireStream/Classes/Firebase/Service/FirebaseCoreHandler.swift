@@ -7,7 +7,7 @@
 
 import RxSwift
 
-class FirebaseCoreHandler {
+public class FirebaseCoreHandler {
 
     /**
      * Listen for changes in the value of a list reference
