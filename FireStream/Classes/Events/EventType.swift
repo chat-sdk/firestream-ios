@@ -6,6 +6,7 @@
 //
 
 public enum EventType {
+    case None
     case Added
     case Removed
     case Modified
