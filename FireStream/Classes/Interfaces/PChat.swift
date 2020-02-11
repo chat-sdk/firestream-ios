@@ -36,7 +36,7 @@ public protocol PChat: PAbstractChat {
      * @param name new name
      * @return completion
      */
-    func setName(name: String) -> Completable
+    func setName(_ name: String) -> Completable
 
     /**
      * Get the group image url
@@ -49,7 +49,7 @@ public protocol PChat: PAbstractChat {
      * @param url of group image
      * @return completion
      */
-    func setImageURL(url: String) -> Completable
+    func setImageURL(_ url: String) -> Completable
 
     /**
      * Get any custom data associated from the chat
@@ -63,7 +63,7 @@ public protocol PChat: PAbstractChat {
      * @param data custom data to write
      * @return completion
      */
-    func setCustomData(data: [String: Any]) -> Completable
+    func setCustomData(_ data: [String: Any]) -> Completable
 
     /**
      * Get a list of members of the chat
@@ -85,58 +85,58 @@ public protocol PChat: PAbstractChat {
      * @param users users to add, set the role of each user using user.setRoleType()
      * @return completion
      */
-    func addUsers(sendInvite: Bool, users: User...) -> Completable
+    func addUsers(_ sendInvite: Bool, _ users: User...) -> Completable
 
     /**
      * @see IChat#addUsers(Boolean, User...)
      */
-    func addUsers(sendInvite: Bool, users: [User]) -> Completable
+    func addUsers(_ sendInvite: Bool, _ users: [User]) -> Completable
 
     /**
      * @see IChat#addUsers(Boolean, User...)
      */
-    func addUser(sendInvite: Bool, user: User) -> Completable
+    func addUser(_ sendInvite: Bool, _ user: User) -> Completable
 
     /**
      * Update users in chat
      * @param users users to update
      * @return completion
      */
-    func updateUsers(users: User...) -> Completable
+    func updateUsers(_ users: User...) -> Completable
 
     /**
      * @see IChat#updateUsers(User...)
      */
-    func updateUsers(users: [User]) -> Completable
+    func updateUsers(_ users: [User]) -> Completable
 
     /**
      * @see IChat#updateUsers(User...)
      */
-    func updateUser(user: User) -> Completable
+    func updateUser(_ user: User) -> Completable
 
     /**
      * Remove users from a chat
      * @param users users to remove
      * @return completion
      */
-    func removeUsers(users: User...) -> Completable
+    func removeUsers(_ users: User...) -> Completable
 
     /**
      * @see IChat#removeUsers(User...)
      */
-    func removeUsers(users: [User]) -> Completable
+    func removeUsers(_ users: [User]) -> Completable
 
     /**
      * @see IChat#removeUsers(User...)
      */
-    func removeUser(user: User) -> Completable
+    func removeUser(_ user: User) -> Completable
 
     /**
      * Send an invite message to users
      * @param users to invite
      * @return completion
      */
-    func inviteUsers(users: [User]) -> Completable
+    func inviteUsers(_ users: [User]) -> Completable
 
     /**
      * Set the role of a user
@@ -144,21 +144,21 @@ public protocol PChat: PAbstractChat {
      * @param roleType new role type
      * @return completion
      */
-    func setRole(user: User, roleType: RoleType) -> Completable
+    func setRole(_ user: User, _ roleType: RoleType) -> Completable
 
     /**
      * Get the users for a particular role
      * @param roleType to find
      * @return list of users
      */
-    func getUsersForRoleType(roleType: RoleType) -> [User]
+    func getUsersForRoleType(_ roleType: RoleType) -> [User]
 
     /**
      * Get the role for a user
      * @param theUser to who's role to find
      * @return role
      */
-    func getRoleType(theUser: User) -> RoleType
+    func getRoleType(_ theUser: User) -> RoleType
 
     /**
      * Get the role for the current user
@@ -172,14 +172,14 @@ public protocol PChat: PAbstractChat {
      * @param user to test
      * @return list of roles
      */
-    func getAvailableRoles(user: User) -> [RoleType]
+    func getAvailableRoles(_ user: User) -> [RoleType]
 
     /**
      * Test to see if the current user has the required permission
      * @param required permission
      * @return true / false
      */
-    func hasPermission(required: RoleType) -> Bool
+    func hasPermission(_ required: RoleType) -> Bool
 
     /**
      * Get an observable which is called when the name changes
@@ -212,14 +212,14 @@ public protocol PChat: PAbstractChat {
      * @param newId message's new ID before sending
      * @return completion
      */
-    func sendMessageWithBody(body: [String: Any], newId: Consumer<String>?) -> Completable
+    func sendMessageWithBody(_ body: [String: Any], _ newId: Consumer<String>?) -> Completable
 
     /**
      * Send a custom message
      * @param body custom message data
      * @return completion
      */
-    func sendMessageWithBody(body: [String: Any]) -> Completable
+    func sendMessageWithBody(_ body: [String: Any]) -> Completable
 
     /**
      * Send a text message
@@ -227,14 +227,14 @@ public protocol PChat: PAbstractChat {
      * @param newId message's new ID before sending
      * @return completion
      */
-    func sendMessageWithText(text: String, newId: Consumer<String>?) -> Completable
+    func sendMessageWithText(_ text: String, _ newId: Consumer<String>?) -> Completable
 
     /**
      * Send a text message
      * @param text message text
      * @return completion
      */
-    func sendMessageWithText(text: String) -> Completable
+    func sendMessageWithText(_ text: String) -> Completable
 
     /**
      * Send a typing indicator message
@@ -242,14 +242,14 @@ public protocol PChat: PAbstractChat {
      * @param newId message's new ID before sending
      * @return completion
      */
-    func sendTypingIndicator(type: TypingStateType, newId: Consumer<String>?) -> Completable
+    func sendTypingIndicator(_ type: TypingStateType, _ newId: Consumer<String>?) -> Completable
 
     /**
      * Send a typing indicator message. An indicator should be sent when starting and stopping typing
      * @param type typing state
      * @return completion
      */
-    func sendTypingIndicator(type: TypingStateType) -> Completable
+    func sendTypingIndicator(_ type: TypingStateType) -> Completable
 
     /**
      * Send a delivery receipt to a user. If delivery receipts are enabled,
@@ -260,7 +260,7 @@ public protocol PChat: PAbstractChat {
      * @param newId message's new ID before sending
      * @return completion
      */
-    func sendDeliveryReceipt(type: DeliveryReceiptType, messageId: String, newId: Consumer<String>?) -> Completable
+    func sendDeliveryReceipt(_ type: DeliveryReceiptType, _ messageId: String, _ newId: Consumer<String>?) -> Completable
 
     /**
      * Send a delivery receipt to a user. If delivery receipts are enabled,
@@ -270,7 +270,7 @@ public protocol PChat: PAbstractChat {
      * @param type receipt type
      * @return completion
      */
-    func sendDeliveryReceipt(type: DeliveryReceiptType, messageId: String) -> Completable
+    func sendDeliveryReceipt(_ type: DeliveryReceiptType, _ messageId: String) -> Completable
 
     /**
      * Send a custom sendable
@@ -278,34 +278,34 @@ public protocol PChat: PAbstractChat {
      * @param newId message's new ID before sending
      * @return completion
      */
-    func send(sendable: Sendable, newId: Consumer<String>?) -> Completable
+    func send(_ sendable: Sendable, _ newId: Consumer<String>?) -> Completable
 
     /**
      * Send a custom sendable
      * @param sendable to send
      * @return completion
      */
-    func send(sendable: Sendable) -> Completable
+    func send(_ sendable: Sendable) -> Completable
 
     /**
      * Delete a sendable
      * @param sendable to delete
      * @return completion
      */
-    func deleteSendable(sendable: Sendable) -> Completable
+    func deleteSendable(_ sendable: Sendable) -> Completable
 
     /**
      * Mark a message as received
      * @param sendable to mark as received
      * @return completion
      */
-    func markReceived(sendable: Sendable) -> Completable
+    func markReceived(_ sendable: Sendable) -> Completable
 
     /**
      * Mark a message as read
      * @param sendable to mark as read
      * @return completion
      */
-    func markRead(sendable: Sendable) -> Completable
+    func markRead(_ sendable: Sendable) -> Completable
 
 }

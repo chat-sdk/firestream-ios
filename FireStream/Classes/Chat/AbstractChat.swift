@@ -40,7 +40,7 @@ public class AbstractChat: PAbstractChat {
      * @param throwable - the events error
      * @throws Exception
      */
-    public func accept(error: Error) throws {
+    public func accept(_ error: Error) throws {
         self.events.errors.onError(error)
     }
 
@@ -49,7 +49,7 @@ public class AbstractChat: PAbstractChat {
      * @return a events of errorMessage results
      */
     internal func messagesOn() -> Observable<FireStreamEvent<Sendable>> {
-        return messagesOn(newerThan: nil)
+        return messagesOn(nil)
     }
 
     /**
@@ -57,7 +57,7 @@ public class AbstractChat: PAbstractChat {
      * @param newerThan only listen for messages after this date
      * @return a events of errorMessage results
      */
-    internal func messagesOn(newerThan: Date?) -> Observable<FireStreamEvent<Sendable>> {
+    internal func messagesOn(_ newerThan: Date?) -> Observable<FireStreamEvent<Sendable>> {
         // MARK: TODO
         return Single.just(FireStreamEvent(.Added)).asObservable()
 //        return Fire.privateApi().getFirebaseService().core.messagesOn(messagesPath(), newerThan, Fire.privateApi().getConfig().messageHistoryLimit).doOnNext(event -> {
@@ -87,7 +87,7 @@ public class AbstractChat: PAbstractChat {
      * @param limit limit the maximum number of messages
      * @return a events of errorMessage results
      */
-    internal func loadMoreMessages(fromDate: Date?, toDate: Date?, limit: Int?) -> Single<[Sendable]> {
+    internal func loadMoreMessages(_ fromDate: Date?, _ toDate: Date?, _ limit: Int?) -> Single<[Sendable]> {
         // MARK: TODO
         return Single.just([])
 //        return Fire.privateApi().getFirebaseService().core
@@ -96,22 +96,22 @@ public class AbstractChat: PAbstractChat {
 //                .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public func loadMoreMessages(fromDate: Date, toDate: Date) -> Single<[Sendable]> {
-        return loadMoreMessages(fromDate: fromDate, toDate: toDate, limit: nil)
+    public func loadMoreMessages(_ fromDate: Date, _ toDate: Date) -> Single<[Sendable]> {
+        return loadMoreMessages(fromDate, toDate, nil)
     }
 
-    public func loadMoreMessagesFrom(fromDate: Date, limit: Int) -> Single<[Sendable]> {
-        return loadMoreMessages(fromDate: fromDate, toDate: nil, limit: limit)
+    public func loadMoreMessagesFrom(_ fromDate: Date, _ limit: Int) -> Single<[Sendable]> {
+        return loadMoreMessages(fromDate, nil, limit)
     }
 
-    public func loadMoreMessagesTo(toDate: Date, limit: Int) -> Single<[Sendable]> {
-        return loadMoreMessages(fromDate: nil, toDate: toDate, limit: limit);
+    public func loadMoreMessagesTo(_ toDate: Date, _ limit: Int) -> Single<[Sendable]> {
+        return loadMoreMessages(nil, toDate, limit);
     }
 
-    public func loadMoreMessagesBefore(toDate: Date, limit: Int) -> Single<[Sendable]> {
+    public func loadMoreMessagesBefore(_ toDate: Date, _ limit: Int) -> Single<[Sendable]> {
         return Single.deferred {
             let before = Date(timeIntervalSince1970: toDate.timeIntervalSince1970 - 1)
-            return self.loadMoreMessagesTo(toDate: before, limit: limit)
+            return self.loadMoreMessagesTo(before, limit)
         }
     }
 
@@ -297,7 +297,7 @@ public class AbstractChat: PAbstractChat {
     public func connect() throws {
         self.dm.add(dateOfLastDeliveryReceipt()
             .asObservable()
-            .flatMap({ self.messagesOn(newerThan: $0) })
+            .flatMap({ self.messagesOn($0) })
 //            .subscribeOn(Schedulers.single())
             .subscribe(onNext: passMessageResultToStream(event:)))
     }
@@ -339,11 +339,11 @@ public class AbstractChat: PAbstractChat {
         return self.sendables
     }
 
-    public func getSendables(type: SendableType) -> [Sendable] {
+    public func getSendables(_ type: SendableType) -> [Sendable] {
         return self.sendables.filter { $0.isType(type) }
     }
 
-    public func getSendable(id: String) -> Sendable? {
+    public func getSendable(_ id: String) -> Sendable? {
         for sendable in self.sendables {
             if (sendable.getId() == id) {
                 return sendable
@@ -372,7 +372,7 @@ public class AbstractChat: PAbstractChat {
         return self.dm
     }
 
-    public func manage(disposable: Disposable) {
+    public func manage(_ disposable: Disposable) {
         getDisposableMap().add(disposable)
     }
 
