@@ -15,7 +15,7 @@ public class FirebaseCoreHandler {
      * @param path to listen to
      * @return events of list events
      */
-    public func listChangeOn(path: Path) -> Observable<FireStreamEvent<ListData>> {
+    public func listChangeOn(_ path: Path) -> Observable<FireStreamEvent<ListData>> {
         return Observable.empty()
     }
 
@@ -25,7 +25,7 @@ public class FirebaseCoreHandler {
      * @param messagesPath
      * @return completion
      */
-    public func deleteSendable(messagesPath: Path) -> Completable {
+    public func deleteSendable(_ messagesPath: Path) -> Completable {
         return Completable.empty()
     }
 
@@ -37,7 +37,7 @@ public class FirebaseCoreHandler {
      * @param newId get the id of the new message before it's sent
      * @return completion
      */
-    public func send(messagesPath: Path, sendable: Sendable, newId: Consumer<String>) -> Completable {
+    public func send(_ messagesPath: Path, _ sendable: Sendable, _ newId: @escaping Consumer<String>) -> Completable {
        return Completable.empty()
     }
 
@@ -50,7 +50,7 @@ public class FirebaseCoreHandler {
      * @param users        to add
      * @return completion
      */
-    public func addUsers(path: Path, dataProvider: User.DataProvider, users: [User]) -> Completable {
+    public func addUsers(_ path: Path, _ dataProvider: User.DataProvider, _ users: [User]) -> Completable {
        return Completable.empty()
     }
 
@@ -61,7 +61,7 @@ public class FirebaseCoreHandler {
      * @param users to remove
      * @return completion
      */
-    public func removeUsers(path: Path, users: [User]) -> Completable {
+    public func removeUsers(_ path: Path, _ users: [User]) -> Completable {
        return Completable.empty()
     }
 
@@ -73,7 +73,7 @@ public class FirebaseCoreHandler {
      * @param users to update
      * @return completion
      */
-    public func updateUsers(path: Path, dataProvider: User.DataProvider, users: [User]) -> Completable {
+    public func updateUsers(_ path: Path, _ dataProvider: User.DataProvider, _ users: [User]) -> Completable {
        return Completable.empty()
     }
 
@@ -85,7 +85,7 @@ public class FirebaseCoreHandler {
      * @param limit limit the maximum number of messages
      * @return a events of message results
      */
-    public func loadMoreMessages(messagesPath: Path, fromDate: Date?, toDate: Date?, limit: Int?) -> Single<[Sendable]> {
+    public func loadMoreMessages(_ messagesPath: Path, _ fromDate: Date?, _ toDate: Date?, _ limit: Int?) -> Single<[Sendable]> {
        return Single.just([])
     }
 
@@ -95,7 +95,7 @@ public class FirebaseCoreHandler {
      * @param messagesPath
      * @return single date
      */
-    public func dateOfLastSentMessage(messagesPath: Path) -> Single<Date> {
+    public func dateOfLastSentMessage(_ messagesPath: Path) -> Single<Date> {
        return Single.just(Date())
     }
 
@@ -106,7 +106,7 @@ public class FirebaseCoreHandler {
      * @param limit limit the maximum number of historic messages
      * @return a events of message results
      */
-    public func messagesOn(messagesPath: Path, newerThan: Date, limit: Int) -> Observable<FireStreamEvent<Sendable>> {
+    public func messagesOn(_ messagesPath: Path, _ newerThan: Date, _ limit: Int) -> Observable<FireStreamEvent<Sendable>> {
         return Single.just(FireStreamEvent(.Added)).asObservable()
     }
 
@@ -118,11 +118,11 @@ public class FirebaseCoreHandler {
         return -1
     }
 
-    public func mute(path: Path, data: [String: Any]) -> Completable {
+    public func mute(_ path: Path, _ data: [String: Any]) -> Completable {
         return Completable.empty()
     }
 
-    public func unmute(path: Path) -> Completable {
+    public func unmute(_ path: Path) -> Completable {
         return Completable.empty()
     }
 
