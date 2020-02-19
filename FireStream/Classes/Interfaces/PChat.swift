@@ -55,7 +55,7 @@ public protocol PChat: PAbstractChat {
      * Get any custom data associated from the chat
      * @return custom data
      */
-    func getCustomData() -> [String: Any]
+    func getCustomData() -> [String: Any]?
 
     /**
      * Associate custom data from the chat - you can add your own
@@ -63,21 +63,13 @@ public protocol PChat: PAbstractChat {
      * @param data custom data to write
      * @return completion
      */
-    func setCustomData(_ data: [String: Any]) -> Completable
+    func setCustomData(_ data: [String: Any]?) -> Completable
 
     /**
      * Get a list of members of the chat
      * @return list of users
      */
-    func getUsers() -> [User]
-
-    /**
-     * Get a list of users from the FireStreamUser namespace
-     * These are exactly the same users but may be useful if
-     * your project already has a User class to avoid a clash
-     * @return list of FireStreamUsers
-     */
-    func getFireStreamUsers() -> [FireStreamUser]
+    func getUsers() -> [FireStreamUser]
 
     /**
      * Add users to a chat
@@ -85,58 +77,58 @@ public protocol PChat: PAbstractChat {
      * @param users users to add, set the role of each user using user.setRoleType()
      * @return completion
      */
-    func addUsers(_ sendInvite: Bool, _ users: User...) -> Completable
+    func addUsers(_ sendInvite: Bool, _ users: FireStreamUser...) -> Completable
 
     /**
      * @see IChat#addUsers(Boolean, User...)
      */
-    func addUsers(_ sendInvite: Bool, _ users: [User]) -> Completable
+    func addUsers(_ sendInvite: Bool, _ users: [FireStreamUser]) -> Completable
 
     /**
      * @see IChat#addUsers(Boolean, User...)
      */
-    func addUser(_ sendInvite: Bool, _ user: User) -> Completable
+    func addUser(_ sendInvite: Bool, _ user: FireStreamUser) -> Completable
 
     /**
      * Update users in chat
      * @param users users to update
      * @return completion
      */
-    func updateUsers(_ users: User...) -> Completable
+    func updateUsers(_ users: FireStreamUser...) -> Completable
 
     /**
      * @see IChat#updateUsers(User...)
      */
-    func updateUsers(_ users: [User]) -> Completable
+    func updateUsers(_ users: [FireStreamUser]) -> Completable
 
     /**
      * @see IChat#updateUsers(User...)
      */
-    func updateUser(_ user: User) -> Completable
+    func updateUser(_ user: FireStreamUser) -> Completable
 
     /**
      * Remove users from a chat
      * @param users users to remove
      * @return completion
      */
-    func removeUsers(_ users: User...) -> Completable
+    func removeUsers(_ users: FireStreamUser...) -> Completable
 
     /**
      * @see IChat#removeUsers(User...)
      */
-    func removeUsers(_ users: [User]) -> Completable
+    func removeUsers(_ users: [FireStreamUser]) -> Completable
 
     /**
      * @see IChat#removeUsers(User...)
      */
-    func removeUser(_ user: User) -> Completable
+    func removeUser(_ user: FireStreamUser?) -> Completable
 
     /**
      * Send an invite message to users
      * @param users to invite
      * @return completion
      */
-    func inviteUsers(_ users: [User]) -> Completable
+    func inviteUsers(_ users: [FireStreamUser]) -> Completable
 
     /**
      * Set the role of a user
@@ -144,27 +136,27 @@ public protocol PChat: PAbstractChat {
      * @param roleType new role type
      * @return completion
      */
-    func setRole(_ user: User, _ roleType: RoleType) -> Completable
+    func setRole(_ user: FireStreamUser, _ roleType: RoleType) -> Completable
 
     /**
      * Get the users for a particular role
      * @param roleType to find
      * @return list of users
      */
-    func getUsersForRoleType(_ roleType: RoleType) -> [User]
+    func getUsersForRoleType(_ roleType: RoleType) -> [FireStreamUser]
 
     /**
      * Get the role for a user
      * @param theUser to who's role to find
      * @return role
      */
-    func getRoleType(_ theUser: User) -> RoleType
+    func getRoleType(_ theUser: FireStreamUser?) -> RoleType?
 
     /**
      * Get the role for the current user
      * @return role
      */
-    func getMyRoleType() -> RoleType
+    func getMyRoleType() -> RoleType?
 
     /**
      * Get a list of roles that this user could be changed to. This will vary
@@ -172,7 +164,7 @@ public protocol PChat: PAbstractChat {
      * @param user to test
      * @return list of roles
      */
-    func getAvailableRoles(_ user: User) -> [RoleType]
+    func getAvailableRoles(_ user: FireStreamUser) -> [RoleType]
 
     /**
      * Test to see if the current user has the required permission
@@ -204,7 +196,7 @@ public protocol PChat: PAbstractChat {
      * Get an observable which is called when the a user is added, removed or updated
      * @return observable
      */
-    func getUserEvents() -> MultiQueueSubject<FireStreamEvent<User>>
+    func getUserEvents() -> MultiQueueSubject<FireStreamEvent<FireStreamUser>>
 
     /**
      * Send a custom message
@@ -299,13 +291,13 @@ public protocol PChat: PAbstractChat {
      * @param sendable to mark as received
      * @return completion
      */
-    func markReceived(_ sendable: Sendable) -> Completable
+    func markReceived(_ sendable: Sendable?) -> Completable
 
     /**
      * Mark a message as read
      * @param sendable to mark as read
      * @return completion
      */
-    func markRead(_ sendable: Sendable) -> Completable
+    func markRead(_ sendable: Sendable?) -> Completable
 
 }

@@ -16,7 +16,7 @@ public class DisposableMap {
             self.disposables.append(disposable)
         }
 
-        // MARK: TODO
+        // TODO: is this required?
         // public func remove(_ disposable: Disposable) {
         //     self.disposables.removeAll { d in
         //         return d == disposable

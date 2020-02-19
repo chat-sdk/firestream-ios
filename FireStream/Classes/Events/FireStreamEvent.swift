@@ -23,7 +23,7 @@ public class FireStreamEvent<T> {
         return self.type
     }
 
-    public func typeIs(type: EventType) -> Bool {
+    public func typeIs(_ type: EventType) -> Bool {
         return self.type == type
     }
 
@@ -31,15 +31,15 @@ public class FireStreamEvent<T> {
         return self.payload
     }
 
-    public static func added<T>(payload: T) -> FireStreamEvent<T> {
+    public static func added<T>(_ payload: T) -> FireStreamEvent<T> {
         return FireStreamEvent<T>(payload, EventType.Added)
     }
 
-    public static func removed<T>(payload: T) -> FireStreamEvent<T> {
+    public static func removed<T>(_ payload: T) -> FireStreamEvent<T> {
         return FireStreamEvent<T>(payload, EventType.Removed)
     }
 
-    public static func modified<T>(payload: T) -> FireStreamEvent<T> {
+    public static func modified<T>(_ payload: T) -> FireStreamEvent<T> {
         return FireStreamEvent<T>(payload, EventType.Modified)
     }
 

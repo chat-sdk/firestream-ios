@@ -9,7 +9,7 @@ public class TextMessage: Message {
 
     public static let TextKey = "text"
 
-    public convenience init(text: String) {
+    public convenience init(_ text: String) {
         self.init()
         self.body?[Self.TextKey] = text
     }
@@ -18,7 +18,7 @@ public class TextMessage: Message {
         return body?[Self.TextKey] as? String
     }
 
-    // MARK: TODO
+    // TODO: is this required?
     // public static func fromSendable(_ sendable: Sendable) -> TextMessage {
     //     return super.fromSendable(sendable)
     // }

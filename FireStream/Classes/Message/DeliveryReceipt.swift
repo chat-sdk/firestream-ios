@@ -14,7 +14,7 @@ public class DeliveryReceipt: Sendable {
         self.type = SendableType.DeliveryReceipt
     }
 
-    public convenience init(type: DeliveryReceiptType, messageUid: String) {
+    public convenience init(_ type: DeliveryReceiptType, _ messageUid: String) {
         self.init()
         self.setBodyType(type)
         self.body?[Self.MessageId] = messageUid

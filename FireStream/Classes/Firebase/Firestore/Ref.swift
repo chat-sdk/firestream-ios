@@ -9,7 +9,10 @@ import FirebaseFirestore
 
 public class Ref {
 
-    public static func collection(_ path: Path) throws -> CollectionReference {
+    public static func collection(_ path: Path?) throws -> CollectionReference {
+        guard let path = path else {
+            throw FireStreamError("path is nil")
+        }
         let ref = referenceFromPath(path)
         if ref.isKind(of: CollectionReference.self) {
             return ref as! CollectionReference
@@ -18,7 +21,10 @@ public class Ref {
         }
     }
 
-    public static func document(_ path: Path) throws -> DocumentReference {
+    public static func document(_ path: Path?) throws -> DocumentReference {
+        guard let path = path else {
+            throw FireStreamError("path is nil")
+        }
         let ref = referenceFromPath(path)
         if ref.isKind(of: DocumentReference.self) {
             return ref as! DocumentReference
@@ -45,7 +51,7 @@ public class Ref {
     }
 
     public static func db() -> Firestore {
-        // MARK: Check this
+        // TODO: make sure this references a shared firebase app
         return Firestore.firestore()
     }
 

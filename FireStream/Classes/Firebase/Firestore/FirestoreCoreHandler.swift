@@ -16,7 +16,7 @@ public class FirestoreCoreHandler: FirebaseCoreHandler {
             return RxFirestore().on(ref).flatMap { change -> Maybe<FireStreamEvent<ListData>> in
                 let d = change.document
                 if d.exists {
-                    let payload = ListData(id: d.documentID, data: d.data(with: .estimate))
+                    let payload = ListData(d.documentID, d.data(with: .estimate))
                     return Maybe.just(FireStreamEvent(payload, Self.typeForDocumentChange(change)))
                 }
                 return Maybe.empty()
@@ -35,7 +35,7 @@ public class FirestoreCoreHandler: FirebaseCoreHandler {
         }
     }
 
-    public override func send(_ messagesPath: Path, _ sendable: Sendable, _ newId: @escaping Consumer<String>) -> Completable {
+    public override func send(_ messagesPath: Path, _ sendable: Sendable, _ newId: Consumer<String>?) -> Completable {
         do {
             let ref = try Ref.collection(messagesPath)
             return RxFirestore().add(ref, sendable.toData(), newId).asCompletable()
@@ -44,7 +44,7 @@ public class FirestoreCoreHandler: FirebaseCoreHandler {
         }
     }
 
-    public override func addUsers(_ path: Path, _ dataProvider: User.DataProvider, _ users: [User]) -> Completable {
+    public override func addUsers(_ path: Path, _ dataProvider: FireStreamUser.DataProvider, _ users: [FireStreamUser]) -> Completable {
         return Single.create { emitter in
             do {
                 let ref = try Ref.collection(path)
@@ -62,7 +62,7 @@ public class FirestoreCoreHandler: FirebaseCoreHandler {
         }.flatMapCompletable(self.runBatch)
     }
 
-    public override func updateUsers(_ path: Path, _ dataProvider: User.DataProvider, _ users: [User]) -> Completable {
+    public override func updateUsers(_ path: Path, _ dataProvider: FireStreamUser.DataProvider, _ users: [FireStreamUser]) -> Completable {
         return Single.create { emitter in
             do {
                 let ref = try Ref.collection(path)
@@ -80,7 +80,7 @@ public class FirestoreCoreHandler: FirebaseCoreHandler {
         }.flatMapCompletable(self.runBatch)
     }
 
-    public override func removeUsers(_ path: Path, _ users: [User]) -> Completable {
+    public override func removeUsers(_ path: Path, _ users: [FireStreamUser]) -> Completable {
         return Single.create { emitter in
             do {
                 let ref = try Ref.collection(path)
@@ -117,8 +117,8 @@ public class FirestoreCoreHandler: FirebaseCoreHandler {
                     }
                     if toDate != nil {
                         query = query.limit(to: limit)
-                        // MARK: TODO
-//                        query = query.limitToLast(limit);
+                        // TODO: fix this
+//                        query = query.limitToLast(limit)
                     }
                 }
 
@@ -146,14 +146,15 @@ public class FirestoreCoreHandler: FirebaseCoreHandler {
     public override func dateOfLastSentMessage(_ messagesPath: Path) -> Single<Date> {
         return Single<Query>.create { emitter in
             do {
-                var query = try Ref.collection(messagesPath) as Query
-
-                // MARK: TODO
-//                query = query.whereField(Keys.From, isEqualTo: Fire.stream().currentUserId())
-                query = query.order(by: Keys.Date, descending: true)
-                query = query.limit(to: 1)
-
-                emitter(.success(query))
+                if let userId = Fire.stream().currentUserId() {
+                    var query = try Ref.collection(messagesPath) as Query
+                    query = query.whereField(Keys.From, isEqualTo: userId)
+                    query = query.order(by: Keys.Date, descending: true)
+                    query = query.limit(to: 1)
+                    emitter(.success(query))
+                } else {
+                    emitter(.error(FireStreamError("userId is nil")))
+                }
             } catch {
                 emitter(.error(error))
             }

@@ -13,7 +13,7 @@ public class FireStreamMessage: Message {
         return firestreamMessage
     }
 
-    // MARK: TODO
+    // TODO: is this required?
     // public static func fromSendable(_ sendable: Sendable) -> FireStreamMessage {
     //     let message = FireStreamMessage()
     //     sendable.copyTo(message)

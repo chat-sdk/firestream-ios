@@ -40,7 +40,7 @@ public class AbstractChat: PAbstractChat {
      * @param throwable - the events error
      * @throws Exception
      */
-    public func accept(_ error: Error) throws {
+    public func accept(_ error: Error) {
         self.events.errors.onError(error)
     }
 
@@ -58,26 +58,44 @@ public class AbstractChat: PAbstractChat {
      * @return a events of errorMessage results
      */
     internal func messagesOn(_ newerThan: Date?) -> Observable<FireStreamEvent<Sendable>> {
-        // MARK: TODO
-        return Single.just(FireStreamEvent(.Added)).asObservable()
-//        return Fire.privateApi().getFirebaseService().core.messagesOn(messagesPath(), newerThan, Fire.privateApi().getConfig().messageHistoryLimit).doOnNext(event -> {
-//            Sendable sendable = event.get();
-//            Sendable previous = getSendable(sendable.getId());
-//            if (event.typeIs(EventType.Added)) {
-//                sendables.add(sendable);
-//            }
-//            if (previous != null) {
-//                if (event.typeIs(EventType.Modified)) {
-//                    sendable.copyTo(previous);
-//                }
-//                if (event.typeIs(EventType.Removed)) {
-//                    sendables.remove(previous);
-//                }
-//            }
-//            getSendableEvents().getSendables().onNext(event);
-//        }).doOnError(throwable -> {
-//            events.publishThrowable().onNext(throwable);
-//        }).subscribeOn(Schedulers.single()).observeOn(AndroidSchedulers.mainThread());
+        guard let firebaseService = Fire.internalApi().getFirebaseService() else {
+            return Observable.error(Fire.internalApi().getFirebaseServiceNilError())
+        }
+
+        guard let config = Fire.internalApi().getConfig() else {
+            return Observable.error(Fire.internalApi().getConfigNilError())
+        }
+
+        guard let messagesPath = messagesPath() else {
+            return Observable.error(FireStreamError("messagesPath is nil"))
+        }
+
+        return firebaseService.core.messagesOn(messagesPath, newerThan, config.messageHistoryLimit)
+            .do(onNext: { event in
+                guard let sendable = event.get() else {
+                    return
+                }
+                
+                guard let sid = sendable.getId() else {
+                    return
+                }
+                
+                if event.typeIs(EventType.Added) {
+                    self.sendables.append(sendable)
+                }
+                
+                if let previous = self.getSendable(sid) {
+                    if (event.typeIs(EventType.Modified)) {
+                        sendable.copyTo(previous)
+                    }
+                    if (event.typeIs(EventType.Removed)) {
+                        self.sendables.removeAll(where: { $0.id == previous.id })
+                    }
+                }
+                self.getSendableEvents().getSendables().onNext(event);
+            }, onError: { error in
+                self.events.publishThrowable().onNext(error)
+            })
     }
 
     /**
@@ -88,12 +106,17 @@ public class AbstractChat: PAbstractChat {
      * @return a events of errorMessage results
      */
     internal func loadMoreMessages(_ fromDate: Date?, _ toDate: Date?, _ limit: Int?) -> Single<[Sendable]> {
-        // MARK: TODO
-        return Single.just([])
-//        return Fire.privateApi().getFirebaseService().core
-//                .loadMoreMessages(messagesPath(), fromDate, toDate, limit)
-//                .subscribeOn(Schedulers.single())
-//                .observeOn(AndroidSchedulers.mainThread());
+        guard let firebaseService = Fire.internalApi().getFirebaseService() else {
+            return Single.error(Fire.internalApi().getFirebaseServiceNilError())
+        }
+
+        guard let messagesPath = messagesPath() else {
+            return Single.error(FireStreamError("messagesPath is nil"))
+        }
+
+        return firebaseService.core.loadMoreMessages(messagesPath, fromDate, toDate, limit)
+            .subscribeOn(SerialDispatchQueueScheduler.init(qos: .background))
+            .observeOn(MainScheduler.instance)
     }
 
     public func loadMoreMessages(_ fromDate: Date, _ toDate: Date) -> Single<[Sendable]> {
@@ -121,12 +144,15 @@ public class AbstractChat: PAbstractChat {
      * @return single date
      */
     internal func dateOfLastDeliveryReceipt() -> Single<Date> {
-        // MARK: TODO
-        return Single.just(Date())
-//        return Fire.privateApi().getFirebaseService().core
-//                .dateOfLastSentMessage(messagesPath())
-//                .subscribeOn(Schedulers.single())
-//                .observeOn(AndroidSchedulers.mainThread());
+        guard let firebaseService = Fire.internalApi().getFirebaseService() else {
+            return Single.error(Fire.internalApi().getFirebaseServiceNilError())
+        }
+
+        guard let messagesPath = messagesPath() else {
+            return Single.error(FireStreamError("messagesPath is nil"))
+        }
+
+        return firebaseService.core.dateOfLastSentMessage(messagesPath)
     }
 
     /**
@@ -134,17 +160,20 @@ public class AbstractChat: PAbstractChat {
      * @param path to listen to
      * @return events of list events
      */
-    internal func listChangeOn(path: Path) -> Observable<FireStreamEvent<ListData>> {
-        // MARK: TODO
-        return Single.just(FireStreamEvent(.Added)).asObservable()
-//        return Fire.privateApi().getFirebaseService().core
-//                .listChangeOn(path)
-//                .subscribeOn(Schedulers.single())
-//                .observeOn(AndroidSchedulers.mainThread());
+    internal func listChangeOn(_ path: Path?) -> Observable<FireStreamEvent<ListData>> {
+        guard let firebaseService = Fire.internalApi().getFirebaseService() else {
+            return Observable.error(Fire.internalApi().getFirebaseServiceNilError())
+        }
+        guard let path = path else {
+            return Observable.error(FireStreamError("path is nil"))
+        }
+        return firebaseService.core.listChangeOn(path)
+                .subscribeOn(SerialDispatchQueueScheduler.init(qos: .background))
+                .observeOn(MainScheduler.instance)
     }
 
-    public func send(messagesPath: Path, sendable: Sendable) -> Completable {
-        return send(messagesPath: messagesPath, sendable: sendable, newId: nil)
+    public func send(_ messagesPath: Path?, _ sendable: Sendable) -> Completable {
+        return send(messagesPath, sendable, nil)
     }
 
         /**
@@ -154,13 +183,16 @@ public class AbstractChat: PAbstractChat {
          * @param newId the ID of the new errorMessage
          * @return single containing errorMessage id
          */
-    public func send(messagesPath: Path, sendable: Sendable, newId: Consumer<String>?) -> Completable {
-        // MARK: TODO
-        return Completable.empty()
-//        return Fire.privateApi().getFirebaseService().core
-//                .send(messagesPath, sendable, newId)
-//                .subscribeOn(Schedulers.single())
-//                .observeOn(AndroidSchedulers.mainThread());
+    public func send(_ messagesPath: Path?, _ sendable: Sendable, _ newId: Consumer<String>?) -> Completable {
+        guard let firebaseService = Fire.internalApi().getFirebaseService() else {
+            return Completable.error(Fire.internalApi().getFirebaseServiceNilError())
+        }
+        guard let messagesPath = messagesPath else {
+            return Completable.error(FireStreamError("messagesPath is nil"))
+        }
+        return firebaseService.core.send(messagesPath, sendable, newId)
+                .subscribeOn(SerialDispatchQueueScheduler.init(qos: .background))
+                .observeOn(MainScheduler.instance)
     }
 
     /**
@@ -168,13 +200,16 @@ public class AbstractChat: PAbstractChat {
      * @param messagesPath
      * @return completion
      */
-    internal func deleteSendable(messagesPath: Path) -> Completable {
-        // MARK: TODO
-        return Completable.empty()
-//        return Fire.privateApi().getFirebaseService().core
-//                .deleteSendable(messagesPath)
-//                .subscribeOn(Schedulers.single())
-//                .observeOn(AndroidSchedulers.mainThread());
+    internal func deleteSendable(_ messagesPath: Path?) -> Completable {
+        guard let firebaseService = Fire.internalApi().getFirebaseService() else {
+            return Completable.error(Fire.internalApi().getFirebaseServiceNilError())
+        }
+        guard let messagesPath = messagesPath else {
+            return Completable.error(FireStreamError("messagesPath is nil"))
+        }
+        return firebaseService.core.deleteSendable(messagesPath)
+                .subscribeOn(SerialDispatchQueueScheduler.init(qos: .background))
+                .observeOn(MainScheduler.instance)
     }
 
     /**
@@ -183,8 +218,11 @@ public class AbstractChat: PAbstractChat {
      * @param user to remove
      * @return completion
      */
-    internal func removeUser(path: Path, user: User) -> Completable {
-        return removeUsers(path: path, users: user)
+    internal func removeUser(_ path: Path?, _ user: FireStreamUser?) -> Completable {
+        if let user = user {
+            return removeUsers(path, user)
+        }
+        return removeUsers(path, [])
     }
 
     /**
@@ -193,8 +231,8 @@ public class AbstractChat: PAbstractChat {
      * @param users to remove
      * @return completion
      */
-    internal func removeUsers(path: Path, users: User...) -> Completable {
-        return removeUsers(path: path, users: users)
+    internal func removeUsers(_ path: Path?, _ users: FireStreamUser...) -> Completable {
+        return removeUsers(path, users)
     }
 
     /**
@@ -203,13 +241,16 @@ public class AbstractChat: PAbstractChat {
      * @param users to remove
      * @return completion
      */
-    internal func removeUsers(path: Path, users: [User]) -> Completable {
-        // MARK: TODO
-        return Completable.empty()
-//        return Fire.privateApi().getFirebaseService().core
-//                .removeUsers(path, users)
-//                .subscribeOn(Schedulers.single())
-//                .observeOn(AndroidSchedulers.mainThread());
+    internal func removeUsers(_ path: Path?, _ users: [FireStreamUser]) -> Completable {
+        guard let firebaseService = Fire.internalApi().getFirebaseService() else {
+            return Completable.error(Fire.internalApi().getFirebaseServiceNilError())
+        }
+        guard let path = path else {
+            return Completable.error(FireStreamError("path is nil"))
+        }
+        return firebaseService.core.removeUsers(path, users)
+                .subscribeOn(SerialDispatchQueueScheduler.init(qos: .background))
+                .observeOn(MainScheduler.instance)
     }
 
     /**
@@ -220,8 +261,8 @@ public class AbstractChat: PAbstractChat {
      * @param user to add
      * @return completion
      */
-    internal func addUser(path: Path, dataProvider: User.DataProvider, user: User) -> Completable {
-        return addUsers(path: path, dataProvider: dataProvider, users: user)
+    internal func addUser(_ path: Path?, _ dataProvider: FireStreamUser.DataProvider, _ user: FireStreamUser) -> Completable {
+        return addUsers(path, dataProvider, user)
     }
 
     /**
@@ -232,8 +273,8 @@ public class AbstractChat: PAbstractChat {
      * @param users to add
      * @return completion
      */
-    public func addUsers(path: Path, dataProvider: User.DataProvider, users: User...) -> Completable {
-        return addUsers(path: path, dataProvider: dataProvider, users: users)
+    public func addUsers(_ path: Path?, _ dataProvider: FireStreamUser.DataProvider, _ users: FireStreamUser...) -> Completable {
+        return addUsers(path, dataProvider, users)
     }
 
     /**
@@ -244,13 +285,16 @@ public class AbstractChat: PAbstractChat {
      * @param users to add
      * @return completion
      */
-    public func addUsers(path: Path, dataProvider: User.DataProvider, users: [User]) -> Completable {
-        // MARK: TODO
-        return Completable.empty()
-//        return Fire.privateApi().getFirebaseService().core
-//                .addUsers(path, dataProvider, users)
-//                .subscribeOn(Schedulers.single())
-//                .observeOn(AndroidSchedulers.mainThread());
+    public func addUsers(_ path: Path?, _ dataProvider: FireStreamUser.DataProvider, _ users: [FireStreamUser]) -> Completable {
+        guard let firebaseService = Fire.internalApi().getFirebaseService() else {
+            return Completable.error(Fire.internalApi().getFirebaseServiceNilError())
+        }
+        guard let path = path else {
+            return Completable.error(FireStreamError("path is nil"))
+        }
+        return firebaseService.core.addUsers(path, dataProvider, users)
+            .subscribeOn(SerialDispatchQueueScheduler.init(qos: .background))
+            .observeOn(MainScheduler.instance)
     }
 
     /**
@@ -261,8 +305,8 @@ public class AbstractChat: PAbstractChat {
      * @param user to update
      * @return completion
      */
-    public func updateUser(path: Path, dataProvider: User.DataProvider, user: User) -> Completable {
-        return updateUsers(path: path, dataProvider: dataProvider, users: user)
+    public func updateUser(_ path: Path?, _ dataProvider: FireStreamUser.DataProvider, _ user: FireStreamUser) -> Completable {
+        return updateUsers(path, dataProvider, user)
     }
 
     /**
@@ -273,8 +317,8 @@ public class AbstractChat: PAbstractChat {
      * @param users to update
      * @return completion
      */
-    public func updateUsers(path: Path, dataProvider: User.DataProvider, users: User...) -> Completable {
-        return updateUsers(path: path, dataProvider: dataProvider, users: users)
+    public func updateUsers(_ path: Path?, _ dataProvider: FireStreamUser.DataProvider, _ users: FireStreamUser...) -> Completable {
+        return updateUsers(path, dataProvider, users)
     }
 
     /**
@@ -285,20 +329,23 @@ public class AbstractChat: PAbstractChat {
      * @param users to update
      * @return completion
      */
-    public func updateUsers(path: Path, dataProvider: User.DataProvider, users: [User]) -> Completable {
-        // MARK: TODO
-        return Completable.empty()
-//        return Fire.privateApi().getFirebaseService().core
-//                .updateUsers(path, dataProvider, users)
-//                .subscribeOn(Schedulers.single())
-//                .observeOn(AndroidSchedulers.mainThread());
+    public func updateUsers(_ path: Path?, _ dataProvider: FireStreamUser.DataProvider, _ users: [FireStreamUser]) -> Completable {
+        guard let firebaseService = Fire.internalApi().getFirebaseService() else {
+            return Completable.error(Fire.internalApi().getFirebaseServiceNilError())
+        }
+        guard let path = path else {
+            return Completable.error(FireStreamError("path is nil"))
+        }
+        return firebaseService.core.updateUsers(path, dataProvider, users)
+            .subscribeOn(SerialDispatchQueueScheduler.init(qos: .background))
+            .observeOn(MainScheduler.instance)
     }
 
     public func connect() throws {
         self.dm.add(dateOfLastDeliveryReceipt()
             .asObservable()
             .flatMap({ self.messagesOn($0) })
-//            .subscribeOn(Schedulers.single())
+            .subscribeOn(SerialDispatchQueueScheduler.init(qos: .background))
             .subscribe(onNext: passMessageResultToStream(event:)))
     }
 
@@ -364,8 +411,8 @@ public class AbstractChat: PAbstractChat {
      * Overridable messages reference
      * @return Firestore messages reference
      */
-    internal func messagesPath() throws -> Path {
-        throw FireStreamError("messagesPath() not implemented")
+    internal func messagesPath() -> Path? {
+        return nil
     }
 
     public func getDisposableMap() -> DisposableMap {
@@ -376,19 +423,29 @@ public class AbstractChat: PAbstractChat {
         getDisposableMap().add(disposable)
     }
 
-    public func markRead(message: Sendable) throws -> Completable {
-        throw FireStreamError("markRead() not implemented")
+    public func markRead(_ sendable: Sendable) -> Completable {
+        return Completable.error(FireStreamError("markRead() not implemented"))
     }
 
-    public func markReceived(message: Sendable) throws -> Completable {
-        throw FireStreamError("markReceived() not implemented")
+    public func markReceived(_ sendable: Sendable) -> Completable {
+        return Completable.error(FireStreamError("markReceived() not implemented"))
     }
 
     public func debug(_ text: String) {
-        // MARK: TODO
-        // if (Fire.privateApi().getConfig().debugEnabled) {
+        guard let config = Fire.internalApi().getConfig() else {
+            return
+        }
+//        if config.debugEnabledPredicate<FireStreamEvent<Sendable>> {
             print(text)
-        // }
+//        }
+    }
+
+    internal func deliveryReceiptFilter() -> Predicate<FireStreamEvent<Message>> {
+        var filters: [Predicate<FireStreamEvent<Message>>] = [Filter.notFromMe(), Filter.byEventType(EventType.Added)]
+        if let markReceivedFilter = Fire.internalApi().getMarkReceivedFilter() {
+            filters.insert(markReceivedFilter, at: 0)
+        }
+        return Filter.and(filters)
     }
 
 }

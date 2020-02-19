@@ -14,7 +14,7 @@ public class Presence: Sendable {
         self.type = SendableType.Presence
     }
 
-    public convenience init(type: PresenceType) {
+    public convenience init(_ type: PresenceType) {
         self.init()
         super.setBodyType(type)
     }

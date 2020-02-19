@@ -12,7 +12,7 @@ public class TypingState: Sendable {
         self.type = SendableType.TypingState
     }
 
-    public convenience init(type: TypingStateType) {
+    public convenience init(_ type: TypingStateType) {
         self.init()
         self.setBodyType(type)
     }
@@ -21,7 +21,7 @@ public class TypingState: Sendable {
         return TypingStateType(super.getBodyType())
     }
 
-    public static func fromSendable(sendable: Sendable) -> TypingState {
+    public static func fromSendable(_ sendable: Sendable) -> TypingState {
         return super.fromSendable(sendable)
     }
 

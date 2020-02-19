@@ -12,13 +12,13 @@ public class Message: Sendable {
         self.type = SendableType.Message
     }
 
-    public convenience init(body: [String: Any]) {
+    public convenience init(_ body: [String: Any]) {
         self.init()
         self.body = body
     }
 
-    public convenience init(id: String, body: [String: Any]) {
-        self.init(body: body)
+    public convenience init(_ id: String, _ body: [String: Any]) {
+        self.init(body)
         self.id = id
     }
 

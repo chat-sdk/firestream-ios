@@ -16,7 +16,7 @@ public class Invitation: Sendable {
         self.type = SendableType.Invitation
     }
 
-    public convenience init(type: InvitationType, chatId: String) {
+    public convenience init(_ type: InvitationType, _ chatId: String) {
         self.init()
         super.setBodyType(type)
         self.body?[Self.ChatId] = chatId
@@ -33,8 +33,7 @@ public class Invitation: Sendable {
     public func accept() -> Completable {
         if getBodyType().equals(InvitationType.chat()) {
             do {
-                // MARK: TODO
-                // return Fire.Stream.joinChat(new Chat(getChatId()));
+                return Fire.stream().joinChat(Chat(try getChatId()))
             } catch {
                 return Completable.error(error)
             }

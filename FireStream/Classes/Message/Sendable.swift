@@ -12,8 +12,8 @@ public class Sendable: BaseMessage {
     internal var id: String?
 
     public required override init() {
-        // MARK: TODO
-        // self.from = Fire.Stream.currentUserId();
+        super.init()
+         self.from = Fire.stream().currentUserId()
     }
 
     public init(id: String, data: [String: Any]) {
@@ -76,8 +76,9 @@ public class Sendable: BaseMessage {
         var data = [String: Any]()
         data[Keys.From] = self.from
         data[Keys.Body] = self.body
-        // MARK: TODO
-        // data[Keys.Date] = Fire.privateApi().getFirebaseService().core.timestamp()
+        if let firebaseService = Fire.internalApi().getFirebaseService() {
+            data[Keys.Date] = firebaseService.core.timestamp()
+        }
         data[Keys.type] = self.type
         return data
     }

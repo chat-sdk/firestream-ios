@@ -10,13 +10,13 @@ public class ListData {
     internal let id: String
     internal let data: [String: Any]
 
-    public init(id: String, data: [String: Any]) {
+    public init(_ id: String, _ data: [String: Any]) {
         self.id = id
         self.data = data
     }
 
-    public func get(key: String) -> Any? {
-        // MARK: TODO
+    public func get(_ key: String) -> Any? {
+        // TODO: check this
         // if let data = self.data {
             return data[key]
         // }

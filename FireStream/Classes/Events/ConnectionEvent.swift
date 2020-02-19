@@ -8,6 +8,7 @@
 public class ConnectionEvent {
 
     public enum ConnectionEventType {
+        case None
         case WillConnect
         case DidConnect
         case WillDisconnect

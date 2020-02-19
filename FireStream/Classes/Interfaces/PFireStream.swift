@@ -7,23 +7,21 @@
 
 import RxSwift
 
-public struct Chat {}
-
 public protocol PFireStream: PAbstractChat {
 
-    func initialize(config: Config?)
+    func initialize(_ config: Config?)
     func initialize()
     func isInitialized() -> Bool
 
     /**
      * @return authenticated user
      */
-    func currentUser() -> User
+    func currentUser() -> FireStreamUser?
 
     /**
      * @return id of authenticated user
      */
-    func currentUserId() -> String
+    func currentUserId() -> String?
 
     // Messages
 
@@ -36,24 +34,24 @@ public protocol PFireStream: PAbstractChat {
      * @param type - the status getTypingStateType
      * @return - subscribe to get a completion, error update from the method
      */
-    func sendDeliveryReceipt(userId: String, type: DeliveryReceiptType, messageId: String) -> Completable
-    func sendDeliveryReceipt(userId: String, type: DeliveryReceiptType, messageId: String, newId: Consumer<String>?) -> Completable
+    func sendDeliveryReceipt(_ userId: String?, _ type: DeliveryReceiptType?, _ messageId: String?) -> Completable
+    func sendDeliveryReceipt(_ userId: String?, _ type: DeliveryReceiptType?, _ messageId: String?, _ newId: Consumer<String>?) -> Completable
 
-    func sendInvitation(userId: String, type: InvitationType, id: String) -> Completable
-    func sendInvitation(userId: String, type: InvitationType, groupId: String, newId: Consumer<String>?) -> Completable
+    func sendInvitation(_ userId: String, _ type: InvitationType, _ id: String) -> Completable
+    func sendInvitation(_ userId: String, _ type: InvitationType, _ groupId: String, _ newId: Consumer<String>?) -> Completable
 
-    func send(toUserId: String, sendable: Sendable) -> Completable
-    func send(toUserId: String, sendable: Sendable, newId: Consumer<String>?) -> Completable
+    func send(_ toUserId: String, _ sendable: Sendable) -> Completable
+    func send(_ toUserId: String, _ sendable: Sendable, _ newId: Consumer<String>?) -> Completable
 
-    func deleteSendable (sendable: Sendable) -> Completable
-    func sendPresence(userId: String, type: PresenceType) -> Completable
-    func sendPresence(userId: String, type: PresenceType, newId: Consumer<String>?) -> Completable
+    func deleteSendable(_ sendable: Sendable?) -> Completable
+    func sendPresence(_ userId: String, _ type: PresenceType) -> Completable
+    func sendPresence(_ userId: String, _ type: PresenceType, _ newId: Consumer<String>?) -> Completable
 
-    func sendMessageWithText(userId: String, text: String) -> Completable
-    func sendMessageWithText(userId: String, text: String, newId: Consumer<String>?) -> Completable
+    func sendMessageWithText(_ userId: String, _ text: String) -> Completable
+    func sendMessageWithText(_ userId: String, _ text: String, _ newId: Consumer<String>?) -> Completable
 
-    func sendMessageWithBody(userId: String, body: [String: Any]) -> Completable
-    func sendMessageWithBody(userId: String, body: [String: Any], newId: Consumer<String>?) -> Completable
+    func sendMessageWithBody(_ userId: String, _ body: [String: Any]) -> Completable
+    func sendMessageWithBody(_ userId: String, _ body: [String: Any], _ newId: Consumer<String>?) -> Completable
 
     /**
      * Send a typing indicator update to a user. This should be sent when the user
@@ -62,28 +60,28 @@ public protocol PFireStream: PAbstractChat {
      * @param type - the status getTypingStateType
      * @return - subscribe to get a completion, error update from the method
      */
-    func sendTypingIndicator(userId: String, type: TypingStateType) -> Completable
-    func sendTypingIndicator(userId: String, type: TypingStateType, newId: Consumer<String>?) -> Completable
+    func sendTypingIndicator(_ userId: String, _ type: TypingStateType) -> Completable
+    func sendTypingIndicator(_ userId: String, _ type: TypingStateType, _ newId: Consumer<String>?) -> Completable
 
     // Blocked
 
-    func block(user: User) -> Completable
-    func unblock(user: User) -> Completable
-    func getBlocked() -> [User]
-    func isBlocked(user: User) -> Bool
+    func block(_ user: FireStreamUser) -> Completable
+    func unblock(_ user: FireStreamUser) -> Completable
+    func getBlocked() -> [FireStreamUser]
+    func isBlocked(_ user: FireStreamUser) -> Bool
 
     // Contacts
 
-    func addContact(user: User, type: ContactType) -> Completable
-    func removeContact(user: User) -> Completable
-    func getContacts() -> [User]
+    func addContact(_ user: FireStreamUser, _ type: ContactType) -> Completable
+    func removeContact(_ user: FireStreamUser) -> Completable
+    func getContacts() -> [FireStreamUser]
 
     // Chats
 
-    func createChat(name: String?, imageURL: String?, users: User...) -> Single<Chat>
-    func createChat(name: String?, imageURL: String?, customData: [String: Any]?, users: User...) -> Single<Chat>
-    func createChat(name: String?, imageURL: String?, users: [User]) -> Single<Chat>
-    func createChat(name: String?, imageURL: String?, customData: [String: Any]?, users: [User]) -> Single<Chat>
+    func createChat(_ name: String?, _ imageURL: String?, _ users: FireStreamUser...) -> Single<Chat>
+    func createChat(_ name: String?, _ imageURL: String?, _ customData: [String: Any]?, _ users: FireStreamUser...) -> Single<Chat>
+    func createChat(_ name: String?, _ imageURL: String?, _ users: [FireStreamUser]) -> Single<Chat>
+    func createChat(_ name: String?, _ imageURL: String?, _ customData: [String: Any]?, _ users: [FireStreamUser]) -> Single<Chat>
 
     /**
      * Leave the chat. When you leave, you will be removed from the
@@ -91,23 +89,23 @@ public protocol PFireStream: PAbstractChat {
      * @param chat to leave
      * @return completion
      */
-    func leaveChat(chat: PChat) -> Completable
+    func leaveChat(_ chat: PChat) -> Completable
 
     /**
      * Join the chat. To join you must already be in the chat roster
      * @param chat to join
      * @return completion
      */
-    func joinChat(chat: PChat) -> Completable
+    func joinChat(_ chat: PChat) -> Completable
 
-    func getChat(chatId: String) -> PChat
+    func getChat(_ chatId: String) -> PChat?
     func getChats() -> [PChat]
 
     // Events
 
     func getChatEvents() -> MultiQueueSubject<FireStreamEvent<Chat>>
-    func getBlockedEvents() -> MultiQueueSubject<FireStreamEvent<User>>
-    func getContactEvents() -> MultiQueueSubject<FireStreamEvent<User>>
+    func getBlockedEvents() -> MultiQueueSubject<FireStreamEvent<FireStreamUser>>
+    func getContactEvents() -> MultiQueueSubject<FireStreamEvent<FireStreamUser>>
     func getConnectionEvents() -> Observable<ConnectionEvent>
 
 }

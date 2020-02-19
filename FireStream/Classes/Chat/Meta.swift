@@ -20,15 +20,15 @@ public class Meta {
         
     }
 
-    public convenience init(name: String, imageURL: String) {
-        self.init(name: name, imageURL: imageURL, data: nil)
+    public convenience init(_ name: String, _ imageURL: String) {
+        self.init(name, imageURL, nil)
     }
 
-    public convenience init(name: String, imageURL: String, data: [String: Any]?) {
-        self.init(name: name, imageURL: imageURL, created: nil, data: data)
+    public convenience init(_ name: String, _ imageURL: String, _ data: [String: Any]?) {
+        self.init(name, imageURL, nil, data)
     }
 
-    public init(name: String, imageURL: String, created: Date?, data: [String: Any]?) {
+    public init(_ name: String, _ imageURL: String, _ created: Date?, _ data: [String: Any]?) {
         self.name = name
         self.imageURL = imageURL
         self.created = created
@@ -63,8 +63,9 @@ public class Meta {
     }
 
     public func addTimestamp() -> Meta {
-        // MARK: TODO
-        // self.timestamp = Fire.privateApi().getFirebaseService().core.timestamp()
+        if let firebaseService = Fire.internalApi().getFirebaseService() {
+            self.timestamp = firebaseService.core.timestamp()
+        }
         return self
     }
 
@@ -116,20 +117,18 @@ public class Meta {
     }
 
     public func copy() -> Meta {
-        let meta = Meta(name: self.name, imageURL: self.imageURL)
+        let meta = Meta(self.name, self.imageURL)
         meta.created = created
         meta.data = data
         return meta
     }
 
     public static func from(_ name: String, _ imageURL: String) -> Meta {
-        return Meta(name: name, imageURL: imageURL)
+        return Meta(name, imageURL)
     }
 
     public static func from(_ name: String, _ imageURL: String, _ data: [String: Any]) -> Meta {
-        return Meta(name: name, imageURL: imageURL, data: data)
+        return Meta(name, imageURL, data)
     }
 
-
 }
-

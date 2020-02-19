@@ -22,7 +22,7 @@ public class FirestoreChatHandler: FirebaseChatHandler {
     public override func joinChat(_ chatId: String) -> Completable {
         do {
             let ref = try Ref.document(Paths.userGroupChatPath(chatId))
-            return RxFirestore().set(ref, User.dateDataProvider().data(nil))
+            return RxFirestore().set(ref, FireStreamUser.dateDataProvider().data(nil))
         } catch {
             return Completable.error(error)
         }
@@ -30,12 +30,12 @@ public class FirestoreChatHandler: FirebaseChatHandler {
 
     public override func setMetaField(_ chatId: String, _ key: String, _ value: Any) -> Completable {
         let chatMetaPath = Paths.chatMetaPath(chatId)
-        chatMetaPath.normalizeForDocument()
+        chatMetaPath?.normalizeForDocument()
 
         do {
             let ref = try Ref.document(chatMetaPath)
             return RxFirestore().update(ref, [
-                chatMetaPath.dotPath(key): value
+                chatMetaPath?.dotPath(key): value
             ]);
         } catch {
             return Completable.error(error)

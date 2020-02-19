@@ -37,7 +37,7 @@ public class FirebaseCoreHandler {
      * @param newId get the id of the new message before it's sent
      * @return completion
      */
-    public func send(_ messagesPath: Path, _ sendable: Sendable, _ newId: @escaping Consumer<String>) -> Completable {
+    public func send(_ messagesPath: Path, _ sendable: Sendable, _ newId: Consumer<String>?) -> Completable {
        return Completable.empty()
     }
 
@@ -50,7 +50,7 @@ public class FirebaseCoreHandler {
      * @param users        to add
      * @return completion
      */
-    public func addUsers(_ path: Path, _ dataProvider: User.DataProvider, _ users: [User]) -> Completable {
+    public func addUsers(_ path: Path, _ dataProvider: FireStreamUser.DataProvider, _ users: [FireStreamUser]) -> Completable {
        return Completable.empty()
     }
 
@@ -61,7 +61,7 @@ public class FirebaseCoreHandler {
      * @param users to remove
      * @return completion
      */
-    public func removeUsers(_ path: Path, _ users: [User]) -> Completable {
+    public func removeUsers(_ path: Path, _ users: [FireStreamUser]) -> Completable {
        return Completable.empty()
     }
 
@@ -73,7 +73,7 @@ public class FirebaseCoreHandler {
      * @param users to update
      * @return completion
      */
-    public func updateUsers(_ path: Path, _ dataProvider: User.DataProvider, _ users: [User]) -> Completable {
+    public func updateUsers(_ path: Path, _ dataProvider: FireStreamUser.DataProvider, _ users: [FireStreamUser]) -> Completable {
        return Completable.empty()
     }
 
@@ -106,7 +106,7 @@ public class FirebaseCoreHandler {
      * @param limit limit the maximum number of historic messages
      * @return a events of message results
      */
-    public func messagesOn(_ messagesPath: Path, _ newerThan: Date, _ limit: Int) -> Observable<FireStreamEvent<Sendable>> {
+    public func messagesOn(_ messagesPath: Path, _ newerThan: Date?, _ limit: Int?) -> Observable<FireStreamEvent<Sendable>> {
         return Single.just(FireStreamEvent(.Added)).asObservable()
     }
 

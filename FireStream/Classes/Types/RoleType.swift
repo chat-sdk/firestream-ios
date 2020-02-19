@@ -58,7 +58,7 @@ public class RoleType: BaseType {
         return data
     }
 
-    public func ge(permission: RoleType) -> Bool {
+    public func ge(_ permission: RoleType) -> Bool {
         return toLevel() <= permission.toLevel()
     }
 
