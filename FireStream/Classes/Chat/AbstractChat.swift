@@ -75,24 +75,24 @@ public class AbstractChat: PAbstractChat {
                 guard let sendable = event.get() else {
                     return
                 }
-                
+
                 guard let sid = sendable.getId() else {
                     return
                 }
-                
+
                 if event.typeIs(EventType.Added) {
                     self.sendables.append(sendable)
                 }
-                
+
                 if let previous = self.getSendable(sid) {
-                    if (event.typeIs(EventType.Modified)) {
+                    if event.typeIs(EventType.Modified) {
                         sendable.copyTo(previous)
                     }
-                    if (event.typeIs(EventType.Removed)) {
+                    if event.typeIs(EventType.Removed) {
                         self.sendables.removeAll(where: { $0.id == previous.id })
                     }
                 }
-                self.getSendableEvents().getSendables().onNext(event);
+                self.getSendableEvents().getSendables().onNext(event)
             }, onError: { error in
                 self.events.publishThrowable().onNext(error)
             })
@@ -128,7 +128,7 @@ public class AbstractChat: PAbstractChat {
     }
 
     public func loadMoreMessagesTo(_ toDate: Date, _ limit: Int) -> Single<[Sendable]> {
-        return loadMoreMessages(nil, toDate, limit);
+        return loadMoreMessages(nil, toDate, limit)
     }
 
     public func loadMoreMessagesBefore(_ toDate: Date, _ limit: Int) -> Single<[Sendable]> {
@@ -365,19 +365,19 @@ public class AbstractChat: PAbstractChat {
         debug("Sendable: \(sendable.getType() ) \(sendable.getId()), date: \(sendable.getDate()?.timeIntervalSince1970)")
 
         // In general, we are mostly interested when messages are added
-        if (sendable.isType(SendableType.message())) {
+        if sendable.isType(SendableType.message()) {
             events.getMessages().onNext(event.to(sendable.toMessage()))
         }
-        if (sendable.isType(SendableType.deliveryReceipt())) {
+        if sendable.isType(SendableType.deliveryReceipt()) {
             events.getDeliveryReceipts().onNext(event.to(sendable.toDeliveryReceipt()))
         }
-        if (sendable.isType(SendableType.typingState())) {
+        if sendable.isType(SendableType.typingState()) {
             events.getTypingStates().onNext(event.to(sendable.toTypingState()))
         }
-        if (sendable.isType(SendableType.invitation())) {
+        if sendable.isType(SendableType.invitation()) {
             events.getInvitations().onNext(event.to(sendable.toInvitation()))
         }
-        if (sendable.isType(SendableType.presence())) {
+        if sendable.isType(SendableType.presence()) {
             events.getPresences().onNext(event.to(sendable.toPresence()))
         }
     }
@@ -392,7 +392,7 @@ public class AbstractChat: PAbstractChat {
 
     public func getSendable(_ id: String) -> Sendable? {
         for sendable in self.sendables {
-            if (sendable.getId() == id) {
+            if sendable.getId() == id {
                 return sendable
             }
         }

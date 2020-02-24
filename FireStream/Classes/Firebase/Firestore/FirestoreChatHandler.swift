@@ -36,7 +36,7 @@ public class FirestoreChatHandler: FirebaseChatHandler {
             let ref = try Ref.document(chatMetaPath)
             return RxFirestore().update(ref, [
                 chatMetaPath?.dotPath(key): value
-            ]);
+            ])
         } catch {
             return Completable.error(error)
         }
@@ -76,7 +76,7 @@ public class FirestoreChatHandler: FirebaseChatHandler {
         }
     }
 
-    public override func add(_ data: [String: Any], _ newId: Consumer<String>?) -> Single<String>{
+    public override func add(_ data: [String: Any], _ newId: Consumer<String>?) -> Single<String> {
         do {
             let ref = try Ref.collection(Paths.chatsPath())
             return RxFirestore().add(ref, data, newId)

@@ -17,7 +17,7 @@ public class Meta {
     internal var wrapped = false
 
     public init() {
-        
+
     }
 
     public convenience init(_ name: String, _ imageURL: String) {
@@ -48,7 +48,7 @@ public class Meta {
         return self.imageURL
     }
 
-    public func setImageURL(_ imageURL: String) -> Meta{
+    public func setImageURL(_ imageURL: String) -> Meta {
         self.imageURL = imageURL
         return self
     }
@@ -100,13 +100,13 @@ public class Meta {
 
         data[Keys.Name] = self.name
         data[Keys.ImageURL] = self.imageURL
-        if (self.data != nil) {
+        if self.data != nil {
             data[Keys.Data] = self.data
         }
-        if (timestamp != nil) {
+        if timestamp != nil {
             data[Keys.Created] = self.timestamp
         }
-        if (self.wrapped) {
+        if self.wrapped {
             return Self.wrap(data)
         }
         return data

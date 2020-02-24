@@ -133,7 +133,7 @@ public class FirestoreCoreHandler: FirebaseCoreHandler {
                 for c in querySnapshot.documentChanges {
                     let docSnapshot = c.document
                     // Add the message
-                    if (docSnapshot.exists && c.type == .added) {
+                    if docSnapshot.exists && c.type == .added {
                         let sendable = self.sendableFromSnapshot(docSnapshot)
                         sendables.append(sendable)
                     }
@@ -251,7 +251,7 @@ public class FirestoreCoreHandler: FirebaseCoreHandler {
     }
 
     public static func typeForDocumentChange(_ change: DocumentChange) -> EventType {
-        switch (change.type) {
+        switch change.type {
         case .added:
             return EventType.Added
         case .removed:

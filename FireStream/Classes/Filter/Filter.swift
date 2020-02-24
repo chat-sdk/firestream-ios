@@ -45,7 +45,7 @@ public class Filter {
                 }
             }
             return false
-        };
+        }
     }
 
     public static func and<T: Sendable>(_ predicates: Predicate<FireStreamEvent<T>>...) -> Predicate<FireStreamEvent<T>> {

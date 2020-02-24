@@ -18,7 +18,7 @@ public class Path {
      * collection. Therefore if the path we pass in to the ref doesn't point to the correct
      * reference type, we truncate it by one and set the remainder
      */
-    internal var remainder: String? = nil
+    internal var remainder: String?
 
     public init(_ path: [String]) {
         for s in path {
@@ -47,7 +47,7 @@ public class Path {
     }
 
     public func get(_ index: Int) -> String? {
-        if (size() > index) {
+        if size() > index {
             return components[index]
         }
         return nil
@@ -68,14 +68,14 @@ public class Path {
     }
 
     public func removeLast() -> Path {
-        if (size() > 0) {
+        if size() > 0 {
             self.components.remove(at: size() - 1)
         }
         return self
     }
 
     public func isDocument() -> Bool {
-        return size() % 2 == 0;
+        return size() % 2 == 0
     }
 
     public func getComponents() -> [String] {
@@ -87,14 +87,14 @@ public class Path {
     }
 
     public func normalizeForDocument() {
-        if (!isDocument()) {
+        if !isDocument() {
             remainder = last()
             _ = removeLast()
         }
     }
 
     public func normalizeForCollection() {
-        if (isDocument()) {
+        if isDocument() {
             remainder = last()
             _ = removeLast()
         }

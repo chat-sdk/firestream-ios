@@ -40,11 +40,11 @@ public class RxFirestore {
         }
     }
 
-    public func add(_ ref: CollectionReference, _ data: [String : Any]) -> Single<String> {
-        return add(ref, data, nil);
+    public func add(_ ref: CollectionReference, _ data: [String: Any]) -> Single<String> {
+        return add(ref, data, nil)
     }
 
-    public func add(_ ref: CollectionReference, _ data: [String : Any], _ newId: Consumer<String>?) -> Single<String> {
+    public func add(_ ref: CollectionReference, _ data: [String: Any], _ newId: Consumer<String>?) -> Single<String> {
         return Single.create { emitter in
             let docRef = ref.document()
             if let newId = newId {
@@ -100,7 +100,7 @@ public class RxFirestore {
         }
     }
 
-    public func get(_ ref: Query) -> Single<Optional<QuerySnapshot>> {
+    public func get(_ ref: Query) -> Single<QuerySnapshot?> {
         return Single.create { emitter -> Disposable in
             ref.getDocuments { (snapsot, error) in
                 if let error = error {
@@ -113,7 +113,7 @@ public class RxFirestore {
         }
     }
 
-    public func get(_ ref: DocumentReference) -> Single<Optional<DocumentSnapshot>> {
+    public func get(_ ref: DocumentReference) -> Single<DocumentSnapshot?> {
         return Single.create { emitter -> Disposable in
             ref.addSnapshotListener { (snapsot, error) in
                 if let error = error {

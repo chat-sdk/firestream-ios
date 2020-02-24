@@ -67,7 +67,7 @@ public class Chat: AbstractChat, PChat {
 
                 self.userEvents.onNext(userEvent)
             } catch {
-                
+
             }
         }))
 
@@ -216,7 +216,7 @@ public class Chat: AbstractChat, PChat {
         return removeUsers(Paths.chatUsersPath(id), users)
     }
 
-    public func inviteUsers(_ users: [FireStreamUser]) -> Completable  {
+    public func inviteUsers(_ users: [FireStreamUser]) -> Completable {
         var completables = [Completable]()
         for user in users {
             if !user.isMe() {
@@ -392,7 +392,7 @@ public class Chat: AbstractChat, PChat {
         return FireStreamError("R.string.error_member_permission_required")
     }
 
-    public static func create(_ name: String?, _ imageURL: String?, _ data: [String: Any]?,  _ users: [FireStreamUser]?) -> Single<Chat> {
+    public static func create(_ name: String?, _ imageURL: String?, _ data: [String: Any]?, _ users: [FireStreamUser]?) -> Single<Chat> {
         guard let firebaseService = Fire.internalApi().getFirebaseService() else {
             return Single.error(Fire.internalApi().getFirebaseServiceNilError())
         }

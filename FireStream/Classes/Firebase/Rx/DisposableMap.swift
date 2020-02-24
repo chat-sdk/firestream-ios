@@ -37,7 +37,7 @@ public class DisposableMap {
     internal var map = [String: DisposableList]()
 
     public init() {
-        
+
     }
 
     public func put(_ key: String, _ disposable: Disposable) {
