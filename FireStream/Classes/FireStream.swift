@@ -93,10 +93,10 @@ public class FireStream: AbstractChat, PFireStream {
     public override func connect() throws {
 
         guard let config = self.config else {
-            throw FireStreamError("context().getString(R.string.error_initialize_not_run)")
+            throw FireStreamError("You need to call Fire.stream().initialize(…)")
         }
         if self.user == nil {
-            throw FireStreamError("context().getString(R.string.error_no_authenticated_user)")
+            throw FireStreamError("Firebase must be authenticated to connect")
         }
 
         connectionEvents.onNext(ConnectionEvent.willConnect())

@@ -158,7 +158,7 @@ public class Config {
             self.root = root
         } else {
             // TODO: update error message
-            throw FireStreamError("R.string.error_invalid_path")
+            throw FireStreamError("Invalid path, path can only contain letters, numbers and underscores")
         }
     }
 
@@ -167,7 +167,7 @@ public class Config {
             self.sandbox = sandbox
         } else {
             // TODO: update error message
-            throw FireStreamError("R.string.error_invalid_path")
+            throw FireStreamError("Invalid path, path can only contain letters, numbers and underscores")
         }
     }
 

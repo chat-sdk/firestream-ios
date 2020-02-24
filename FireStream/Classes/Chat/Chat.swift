@@ -103,7 +103,7 @@ public class Chat: AbstractChat, PChat {
         return Completable.deferred {
             if let rt = self.getMyRoleType(), rt.equals(RoleType.owner()) && self.getUsers().count > 1 {
                 if self.getUsers().count > 1 {
-                    return Completable.error(FireStreamError("R.string.error_group_must_be_empty_to_close"))
+                    return Completable.error(FireStreamError("Remove the other users before you can delete the group"))
                 } else {
                     return self.delete().do(onCompleted: self.disconnect)
                 }
@@ -381,15 +381,15 @@ public class Chat: AbstractChat, PChat {
     }
 
     internal func ownerPermissionRequired() -> Error {
-        return FireStreamError("R.string.error_owner_permission_required")
+        return FireStreamError("You must be a group owner to perform this action")
     }
 
     internal func adminPermissionRequired() -> Error {
-        return FireStreamError("R.string.error_admin_permission_required")
+        return FireStreamError("You must be a group admin to perform this action")
     }
 
     internal func memberPermissionRequired() -> Error {
-        return FireStreamError("R.string.error_member_permission_required")
+        return FireStreamError("You must be a group member to perform this action")
     }
 
     public static func create(_ name: String?, _ imageURL: String?, _ data: [String: Any]?, _ users: [FireStreamUser]?) -> Single<Chat> {

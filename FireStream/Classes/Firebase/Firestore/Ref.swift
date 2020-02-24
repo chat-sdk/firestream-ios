@@ -17,7 +17,7 @@ public class Ref {
         if ref.isKind(of: CollectionReference.self) {
             return ref as! CollectionReference
         } else {
-            throw FireStreamError("R.string.error_mismatched_col_reference")
+            throw FireStreamError("CollectionReference expected but path points to document")
         }
     }
 
@@ -29,7 +29,7 @@ public class Ref {
         if ref.isKind(of: DocumentReference.self) {
             return ref as! DocumentReference
         } else {
-            throw FireStreamError("R.string.error_mismatched_doc_reference")
+            throw FireStreamError("DocumentReference expected but path points to collection")
         }
     }
 

@@ -85,19 +85,19 @@ public class RoleType: BaseType {
 
     public func stringValue() -> String {
         if equals(Self.owner()) {
-            return "R.string.owner"
+            return "Owner"
         }
         if equals(Self.admin()) {
-            return "R.string.admin"
+            return "Admin"
         }
         if equals(Self.member()) {
-            return "R.string.member"
+            return "Member"
         }
         if equals(Self.watcher()) {
-            return "R.string.watcher"
+            return "Watcher"
         }
         if equals(Self.banned()) {
-            return "R.string.banned"
+            return "Banned"
         }
         return ""
     }
