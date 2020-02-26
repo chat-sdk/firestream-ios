@@ -17,7 +17,7 @@ public class Ref {
         if ref.isKind(of: CollectionReference.self) {
             return ref as! CollectionReference
         } else {
-            throw FireStreamError("CollectionReference expected but path points to document")
+            throw FireStreamError("CollectionReference expected but path points to document: \(path.toString())")
         }
     }
 
@@ -29,14 +29,14 @@ public class Ref {
         if ref.isKind(of: DocumentReference.self) {
             return ref as! DocumentReference
         } else {
-            throw FireStreamError("DocumentReference expected but path points to collection")
+            throw FireStreamError("DocumentReference expected but path points to collection: \(path.toString())")
         }
     }
 
     public static func referenceFromPath(_ path: Path) -> NSObject {
         var ref = db().collection(path.first()) as NSObject
 
-        for i in 0..<path.size() {
+        for i in 1..<path.size() {
             guard let component = path.get(i) else {
                 continue
             }
