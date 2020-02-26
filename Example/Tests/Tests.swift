@@ -53,5 +53,25 @@ class Tests: XCTestCase {
         }, onError: { XCTFail($0.localizedDescription) })
         wait(for: [expectation], timeout: 10.0)
     }
-    
+
+    func testGetContactAdded() {
+        let expectation = XCTestExpectation(description: "Get contact added")
+        _ = Self.authenticate().subscribe(onCompleted: {
+            let user = Self.testUserJohn
+            _ = Fire.stream().getContactEvents().allEvents().subscribe(onNext: { userEvent in
+                if userEvent.typeIs(EventType.Added) {
+                    if let u = userEvent.get(), u.equals(user) {
+                        expectation.fulfill()
+                    } else {
+                        XCTFail("Wrong user added")
+                    }
+                } else {
+                    XCTFail("No contact added")
+                }
+                expectation.fulfill()
+            }, onError: { XCTFail($0.localizedDescription) })
+        }, onError: { XCTFail($0.localizedDescription) })
+        wait(for: [expectation], timeout: 10.0)
+    }
+
 }
