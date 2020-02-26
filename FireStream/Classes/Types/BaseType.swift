@@ -10,7 +10,7 @@ public class BaseType {
     internal var type = ""
 
     public required init(_ type: String) {
-        self.type = ""
+        self.type = type
     }
 
     public required init(_ type: BaseType) {
