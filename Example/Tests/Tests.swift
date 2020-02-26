@@ -74,4 +74,23 @@ class Tests: XCTestCase {
         wait(for: [expectation], timeout: 10.0)
     }
 
+    func testDeleteContact() {
+        let expectation = XCTestExpectation(description: "Delete contact")
+        _ = Self.authenticate().subscribe(onCompleted: {
+            let user = Self.testUserJohn
+            _ = Fire.stream().removeContact(user).subscribe(onCompleted: {
+                // Check that it exists in the contact list
+                let contacts = Fire.stream().getContacts()
+
+                if contacts.count != 0 {
+                    XCTFail("Contact size must be 0")
+                } else {
+                    expectation.fulfill()
+                }
+
+            }, onError: { XCTFail($0.localizedDescription) })
+        }, onError: { XCTFail($0.localizedDescription) })
+        wait(for: [expectation], timeout: 10.0)
+    }
+
 }
