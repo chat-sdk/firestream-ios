@@ -3,6 +3,8 @@ import FireStream
 import Firebase
 import RxSwift
 
+typealias FSError = FireStreamError
+
 class Tests: XCTestCase {
 
     static let testUserJohn = FireStreamUser("13k1gXOyO0NG41HpQnO4yOplRQL2", RoleType.watcher())
@@ -23,6 +25,18 @@ class Tests: XCTestCase {
         }
     }
 
+    static func connect() -> Completable {
+        return authenticate().andThen(Completable.create { emitter in
+            return Fire.stream().getConnectionEvents().subscribe(onNext: { connectionEvent in
+                if connectionEvent.getType() == .DidConnect {
+                    emitter(.completed)
+                }
+            }, onError: { error in
+                emitter(.error(error))
+            })
+        })
+    }
+
     override class func setUp() {
         super.setUp()
         FirebaseApp.configure()
@@ -34,62 +48,96 @@ class Tests: XCTestCase {
         super.tearDown()
     }
 
-    func testAddContact() {
-        let expectation = XCTestExpectation(description: "Add contact")
-        _ = Self.authenticate().subscribe(onCompleted: {
+    func addContact() -> Completable {
+        return Completable.deferred {
             let user = Self.testUserJohn
-            _ = Fire.stream().addContact(user, ContactType.contact()).subscribe(onCompleted: {
-                // Check that it exists in the contact list
-                let contacts = Fire.stream().getContacts()
-
-                if contacts.count != 1 {
-                    XCTFail("Contact size must be 1")
-                } else if !contacts[0].equals(user) {
-                    XCTFail("Correct user not added to contacts")
-                } else {
-                    expectation.fulfill()
-                }
-            }, onError: { XCTFail($0.localizedDescription) })
-        }, onError: { XCTFail($0.localizedDescription) })
-        wait(for: [expectation], timeout: 10.0)
-    }
-
-    func testGetContactAdded() {
-        let expectation = XCTestExpectation(description: "Get contact added")
-        _ = Self.authenticate().subscribe(onCompleted: {
-            let user = Self.testUserJohn
-            _ = Fire.stream().getContactEvents().allEvents().subscribe(onNext: { userEvent in
-                if userEvent.typeIs(EventType.Added) {
-                    if let u = userEvent.get(), u.equals(user) {
-                        expectation.fulfill()
+            return Fire.stream().addContact(user, ContactType.contact())
+                .andThen(Completable.create(subscribe: { emitter in
+                    // Check that it exists in the contact list
+                    let contacts = Fire.stream().getContacts()
+                    
+                    if contacts.count != 1 {
+                        emitter(.error(FSError("Contact size must be 1")))
+                    } else if !contacts[0].equals(user) {
+                        emitter(.error(FSError("Correct user not added to contacts")))
                     } else {
-                        XCTFail("Wrong user added")
+                        emitter(.completed)
                     }
-                } else {
-                    XCTFail("No contact added")
-                }
-                expectation.fulfill()
-            }, onError: { XCTFail($0.localizedDescription) })
-        }, onError: { XCTFail($0.localizedDescription) })
-        wait(for: [expectation], timeout: 10.0)
+                    return Disposables.create()
+                }))
+        }
     }
 
-    func testDeleteContact() {
-        let expectation = XCTestExpectation(description: "Delete contact")
-        _ = Self.authenticate().subscribe(onCompleted: {
+    func getContactAdded() -> Completable {
+        return Completable.deferred {
             let user = Self.testUserJohn
-            _ = Fire.stream().removeContact(user).subscribe(onCompleted: {
-                // Check that it exists in the contact list
-                let contacts = Fire.stream().getContacts()
+            return Completable.create(subscribe: { emitter in
+                return Fire.stream().getContactEvents().sinceLastEvent().subscribe(onNext: { userEvent in
+                    if userEvent.typeIs(EventType.Added) {
+                        if let u = userEvent.get(), u.equals(user) {
+                            emitter(.completed)
+                        } else {
+                            emitter(.error(FSError("Wrong user added")))
+                        }
+                    } else {
+                        emitter(.error(FSError("No contact added")))
+                    }
+                }, onError: { emitter(.error($0)) })
+            })
+        }
+    }
 
-                if contacts.count != 0 {
-                    XCTFail("Contact size must be 0")
-                } else {
-                    expectation.fulfill()
-                }
+    func deleteContact() -> Completable {
+        return Completable.deferred {
+            let user = Self.testUserJohn
+            return Fire.stream().removeContact(user)
+                .andThen(Completable.create(subscribe: { emitter in
+                    // Check that it exists in the contact list
+                    let contacts = Fire.stream().getContacts()
 
-            }, onError: { XCTFail($0.localizedDescription) })
-        }, onError: { XCTFail($0.localizedDescription) })
+                    if contacts.count != 0 {
+                        emitter(.error(FSError("Contact size must be 0")))
+                    } else {
+                        emitter(.completed)
+                    }
+                    return Disposables.create()
+                }))
+        }
+    }
+
+    func getContactRemoved() -> Completable {
+        return Completable.deferred {
+            let user = Self.testUserJohn
+            return Completable.create(subscribe: { emitter in
+                return Fire.stream().getContactEvents().sinceLastEvent().subscribe(onNext: { userEvent in
+                    if userEvent.typeIs(EventType.Removed) {
+                        if let u = userEvent.get(), u.equals(user) {
+                            emitter(.completed)
+                        } else {
+                            emitter(.error(FSError("Wrong user removed")))
+                        }
+                    } else {
+                        emitter(.error(FSError("No contact removed")))
+                    }
+                }, onError: { emitter(.error($0)) })
+            })
+        }
+    }
+
+    func test() {
+        let expectation = XCTestExpectation(description: "Perform all tests")
+        _ = Self.connect()
+            .do(onError: { XCTFail($0.localizedDescription) })
+            .andThen(addContact())
+            .do(onError: { XCTFail($0.localizedDescription) })
+            .andThen(getContactAdded())
+            .do(onError: { XCTFail($0.localizedDescription) })
+            .andThen(deleteContact())
+            .do(onError: { XCTFail($0.localizedDescription) })
+            .andThen(getContactRemoved())
+            .do(onError: { XCTFail($0.localizedDescription) })
+            .subscribe(onCompleted: expectation.fulfill)
+
         wait(for: [expectation], timeout: 10.0)
     }
 
