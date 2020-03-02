@@ -4,13 +4,13 @@ import Firebase
 import RxSwift
 
 typealias FSError = FireStreamError
+typealias FSUser = FireStreamUser
 
 class Tests: XCTestCase {
 
-    static let testUserJohn = FireStreamUser("13k1gXOyO0NG41HpQnO4yOplRQL2", RoleType.watcher())
-    static let testUserAlex = FireStreamUser("4qnJbkDFMbaKkmYcS7GTQvhsxHE3", RoleType.admin())
-    static let testUserMike = FireStreamUser("utSRkZHrNghKKRFlptTzziqqM7I3", RoleType.banned())
-    static let testUsers = [testUserJohn, testUserAlex, testUserMike]
+    let testUserJohn = FSUser("13k1gXOyO0NG41HpQnO4yOplRQL2", RoleType.watcher())
+    let testUserAlex = FSUser("4qnJbkDFMbaKkmYcS7GTQvhsxHE3", RoleType.admin())
+    let testUserMike = FSUser("utSRkZHrNghKKRFlptTzziqqM7I3", RoleType.banned())
 
     static func authenticate() -> Completable {
         return Completable.create { emitter in
@@ -48,9 +48,13 @@ class Tests: XCTestCase {
         super.tearDown()
     }
 
+    func users() -> [FSUser] {
+        return [testUserJohn, testUserAlex, testUserMike]
+    }
+
     func addContact() -> Completable {
         return Completable.deferred {
-            let user = Self.testUserJohn
+            let user = self.testUserJohn
             return Fire.stream().addContact(user, ContactType.contact())
                 .andThen(Completable.create(subscribe: { emitter in
                     // Check that it exists in the contact list
@@ -70,7 +74,7 @@ class Tests: XCTestCase {
 
     func getContactAdded() -> Completable {
         return Completable.deferred {
-            let user = Self.testUserJohn
+            let user = self.testUserJohn
             return Completable.create(subscribe: { emitter in
                 return Fire.stream().getContactEvents().sinceLastEvent().subscribe(onNext: { userEvent in
                     if userEvent.typeIs(EventType.Added) {
@@ -89,7 +93,7 @@ class Tests: XCTestCase {
 
     func deleteContact() -> Completable {
         return Completable.deferred {
-            let user = Self.testUserJohn
+            let user = self.testUserJohn
             return Fire.stream().removeContact(user)
                 .andThen(Completable.create(subscribe: { emitter in
                     // Check that it exists in the contact list
@@ -107,7 +111,7 @@ class Tests: XCTestCase {
 
     func getContactRemoved() -> Completable {
         return Completable.deferred {
-            let user = Self.testUserJohn
+            let user = self.testUserJohn
             return Completable.create(subscribe: { emitter in
                 return Fire.stream().getContactEvents().sinceLastEvent().subscribe(onNext: { userEvent in
                     if userEvent.typeIs(EventType.Removed) {
@@ -132,9 +136,8 @@ class Tests: XCTestCase {
                 "TestKey": "TestValue",
                 "Key2": 999
             ]
-            let users = Self.testUsers
             return Completable.create { emitter in
-                Fire.stream().createChat(chatName, chatImageURL, customData, users).subscribe(onSuccess: { chat in
+                Fire.stream().createChat(chatName, chatImageURL, customData, self.users()).subscribe(onSuccess: { chat in
                     // Check the name matches
                     if chat.getName() != chatName {
                         emitter(.error(FSError("Name mismatch")))
@@ -149,17 +152,13 @@ class Tests: XCTestCase {
                         emitter(.error(FSError("Chat id not set")))
                     }
 
-                    if let data = chat.getCustomData() {
-                        if !NSDictionary(dictionary: data).isEqual(to: customData) {
-                            emitter(.error(FSError("Custom data value mismatch")))
-                        }
-                    } else {
-                        emitter(.error(FSError("Custom data type null")))
+                    if !customData.equals(chat.getCustomData()) {
+                        emitter(.error(FSError("Custom data value mismatch")))
                     }
 
                     // Check the users
                     for user in chat.getUsers() {
-                        for u in users {
+                        for u in self.users() {
                             if user.equals(u) && !user.isMe() {
                                 if !user.equalsRoleType(u) {
                                     emitter(.error(FSError("Role type mismatch")))
@@ -197,4 +196,14 @@ class Tests: XCTestCase {
         wait(for: [expectation], timeout: 10.0)
     }
 
+}
+
+fileprivate extension Dictionary {
+    func equals(_ data: [AnyHashable: Any]?) -> Bool {
+        if let data = data {
+            return (self as NSDictionary).isEqual(to: data)
+        } else {
+            return false
+        }
+    }
 }
