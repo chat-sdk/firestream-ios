@@ -124,6 +124,60 @@ class Tests: XCTestCase {
         }
     }
 
+    func createChat() -> Completable {
+        return Completable.deferred {
+            let chatName = "Test"
+            let chatImageURL = "https://chatsdk.co/wp-content/uploads/2017/01/image_message-407x389.jpg"
+            let customData: [String: Any] = [
+                "TestKey": "TestValue",
+                "Key2": 999
+            ]
+            let users = Self.testUsers
+            return Completable.create { emitter in
+                Fire.stream().createChat(chatName, chatImageURL, customData, users).subscribe(onSuccess: { chat in
+                    // Check the name matches
+                    if chat.getName() != chatName {
+                        emitter(.error(FSError("Name mismatch")))
+                    }
+
+                    if chat.getImageURL() != chatImageURL {
+                        emitter(.error(FSError("Image url mismatch")))
+                    }
+
+                    // Check the ID type set
+                    if chat.getId().isEmpty {
+                        emitter(.error(FSError("Chat id not set")))
+                    }
+
+                    if let data = chat.getCustomData() {
+                        if !NSDictionary(dictionary: data).isEqual(to: customData) {
+                            emitter(.error(FSError("Custom data value mismatch")))
+                        }
+                    } else {
+                        emitter(.error(FSError("Custom data type null")))
+                    }
+
+                    // Check the users
+                    for user in chat.getUsers() {
+                        for u in users {
+                            if user.equals(u) && !user.isMe() {
+                                if !user.equalsRoleType(u) {
+                                    emitter(.error(FSError("Role type mismatch")))
+                                }
+                            }
+                        }
+                        if user.isMe() && !user.equalsRoleType(RoleType.owner()) {
+                            emitter(.error(FSError("Creator user not owner")))
+                        }
+                    }
+
+                    emitter(.completed)
+
+                }, onError: { emitter(.error($0)) })
+            }
+        }
+    }
+
     func test() {
         let expectation = XCTestExpectation(description: "Perform all tests")
         _ = Self.connect()
@@ -135,6 +189,8 @@ class Tests: XCTestCase {
             .andThen(deleteContact())
             .do(onError: { XCTFail($0.localizedDescription) })
             .andThen(getContactRemoved())
+            .do(onError: { XCTFail($0.localizedDescription) })
+            .andThen(createChat())
             .do(onError: { XCTFail($0.localizedDescription) })
             .subscribe(onCompleted: expectation.fulfill)
 

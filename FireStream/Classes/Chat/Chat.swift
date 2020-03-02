@@ -447,8 +447,8 @@ public class Chat: AbstractChat, PChat {
     }
 
     public static func from(_ listEvent: FireStreamEvent<ListData>) throws -> Chat {
-        if let change = listEvent.get(), let date = change.get(Keys.Date) as? Date {
-            return Chat(change.getId(), date)
+        if let change = listEvent.get() {
+            return Chat(change.getId(), change.get(Keys.Date) as? Date)
         } else {
             throw FireStreamError("Could not create chat")
         }
