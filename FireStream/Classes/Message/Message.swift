@@ -22,7 +22,7 @@ public class Message: Sendable {
         self.id = id
     }
 
-    public static func fromSendable(_ sendable: Sendable) -> Message {
+    public class func fromSendable(_ sendable: Sendable) -> Message {
         return super.fromSendable(sendable)
     }
 

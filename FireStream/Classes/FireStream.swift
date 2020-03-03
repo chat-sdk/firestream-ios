@@ -33,7 +33,7 @@ public class FireStream: AbstractChat, PFireStream {
      */
     internal var config: Config?
 
-    public static func shared() -> FireStream {
+    public class func shared() -> FireStream {
         return self.instance
     }
 

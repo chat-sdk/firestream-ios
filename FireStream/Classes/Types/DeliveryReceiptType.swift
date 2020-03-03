@@ -10,11 +10,11 @@ public class DeliveryReceiptType: BaseType {
     public static let Received = "received"
     public static let Read = "read"
 
-    public static func received() -> DeliveryReceiptType {
+    public class func received() -> DeliveryReceiptType {
         return DeliveryReceiptType(Received)
     }
 
-    public static func read() -> DeliveryReceiptType {
+    public class func read() -> DeliveryReceiptType {
         return DeliveryReceiptType(Read)
     }
 

@@ -76,14 +76,14 @@ public class FireStreamUser {
         return self.id == Fire.internalApi().currentUserId()
     }
 
-    public static func currentUser(_ role: RoleType?) -> FireStreamUser? {
+    public class func currentUser(_ role: RoleType?) -> FireStreamUser? {
         if let userId = Fire.internalApi().currentUserId() {
             return FireStreamUser(userId, role)
         }
         return nil
     }
 
-    public static func currentUser() -> FireStreamUser? {
+    public class func currentUser() -> FireStreamUser? {
         return currentUser(nil)
     }
 
@@ -95,7 +95,7 @@ public class FireStreamUser {
         }
     }
 
-    public static func dateDataProvider() -> DataProvider {
+    public class func dateDataProvider() -> DataProvider {
         if let firebaseService = Fire.internalApi().getFirebaseService() {
             return DataProvider { _ in
                 return [Keys.Date: firebaseService.core.timestamp()]
@@ -106,15 +106,15 @@ public class FireStreamUser {
         }
     }
 
-    public static func roleTypeDataProvider() -> DataProvider {
+    public class func roleTypeDataProvider() -> DataProvider {
         return DataProvider { ($0?.roleType?.data() ?? [:]) }
     }
 
-    public static func contactTypeDataProvider() -> DataProvider {
+    public class func contactTypeDataProvider() -> DataProvider {
         return DataProvider { ($0?.contactType?.data() ?? [:]) }
     }
 
-    public static func from(_ event: FireStreamEvent<ListData>) throws -> FireStreamUser {
+    public class func from(_ event: FireStreamEvent<ListData>) throws -> FireStreamUser {
         guard let id = event.get()?.getId() else {
             throw FireStreamError("id of event payload is undefined")
         }

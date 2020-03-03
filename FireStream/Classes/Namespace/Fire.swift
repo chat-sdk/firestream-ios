@@ -7,11 +7,11 @@
 
 public class Fire {
 
-    public static func internalApi() -> FireStream {
+    public class func internalApi() -> FireStream {
         return FireStream.shared()
     }
 
-    public static func stream() -> PFireStream {
+    public class func stream() -> PFireStream {
         return FireStream.shared()
     }
 

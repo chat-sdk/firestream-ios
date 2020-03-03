@@ -9,11 +9,11 @@ public class TypingStateType: BaseType {
 
     public static let Typing = "typing"
 
-    public static func typing() -> TypingStateType {
+    public class func typing() -> TypingStateType {
         return TypingStateType(Typing)
     }
 
-    static func none() -> TypingStateType {
+    public class func none() -> TypingStateType {
         return super.none()
     }
 

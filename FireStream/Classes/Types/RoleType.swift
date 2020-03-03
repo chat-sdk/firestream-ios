@@ -32,23 +32,23 @@ public class RoleType: BaseType {
      */
     public static let Banned = "banned"
 
-    public static func owner() -> RoleType {
+    public class func owner() -> RoleType {
         return RoleType(Owner)
     }
 
-    public static func admin() -> RoleType {
+    public class func admin() -> RoleType {
         return RoleType(Admin)
     }
 
-    public static func member() -> RoleType {
+    public class func member() -> RoleType {
         return RoleType(Member)
     }
 
-    public static func watcher() -> RoleType {
+    public class func watcher() -> RoleType {
         return RoleType(Watcher)
     }
 
-    public static func banned() -> RoleType {
+    public class func banned() -> RoleType {
         return RoleType(Banned)
     }
 
@@ -102,27 +102,27 @@ public class RoleType: BaseType {
         return ""
     }
 
-    public static func allStringValues() -> [String] {
+    public class func allStringValues() -> [String] {
         return allStringValuesExcluding()
     }
 
-    public static func allStringValuesExcluding(_ excluding: RoleType...) -> [String] {
+    public class func allStringValuesExcluding(_ excluding: RoleType...) -> [String] {
         return allStringValuesExcluding(excluding)
     }
 
-    public static func allStringValuesExcluding(_ excluding: [RoleType]) -> [String] {
+    public class func allStringValuesExcluding(_ excluding: [RoleType]) -> [String] {
         return rolesToStringValues(allExcluding(excluding))
     }
 
-    public static func all() -> [RoleType] {
+    public class func all() -> [RoleType] {
         return allExcluding()
     }
 
-    public static func allExcluding(_ excluding: RoleType...) -> [RoleType] {
+    public class func allExcluding(_ excluding: RoleType...) -> [RoleType] {
         return allExcluding(excluding)
     }
 
-    public static func allExcluding(_ excluding: [RoleType]) -> [RoleType] {
+    public class func allExcluding(_ excluding: [RoleType]) -> [RoleType] {
         var list = [owner(), admin(), member(), watcher(), banned()]
         for rt in excluding {
             list.removeAll(where: { roleType -> Bool in
@@ -132,7 +132,7 @@ public class RoleType: BaseType {
         return list
     }
 
-    public static func rolesToStringValues(_ roleTypes: [RoleType]) -> [String] {
+    public class func rolesToStringValues(_ roleTypes: [RoleType]) -> [String] {
         var stringValues = [String]()
 
         for rt in roleTypes {
@@ -142,7 +142,7 @@ public class RoleType: BaseType {
         return stringValues
     }
 
-    public static func reverseMap() -> [String: RoleType] {
+    public class func reverseMap() -> [String: RoleType] {
         var map = [String: RoleType]()
         for roleType in self.all() {
             map[roleType.stringValue()] = roleType

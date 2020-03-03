@@ -28,7 +28,7 @@ public class DeliveryReceipt: Sendable {
         return DeliveryReceiptType(super.getBodyType())
     }
 
-    public static func fromSendable(_ sendable: Sendable) -> DeliveryReceipt {
+    public class func fromSendable(_ sendable: Sendable) -> DeliveryReceipt {
         return super.fromSendable(sendable)
     }
 

@@ -125,7 +125,7 @@ public class Sendable: BaseMessage {
         return self.getId() == sendable.getId()
     }
 
-    public static func fromSendable<T: Sendable>(_ sendable: Sendable) -> T {
+    public class func fromSendable<T: Sendable>(_ sendable: Sendable) -> T {
         let message = T.init()
         sendable.copyTo(message)
         return message

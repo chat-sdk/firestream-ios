@@ -9,7 +9,7 @@ public class ContactType: BaseType {
 
     public static let Contact = "contact"
 
-    public static func contact() -> ContactType {
+    public class func contact() -> ContactType {
         return ContactType(Contact)
     }
 

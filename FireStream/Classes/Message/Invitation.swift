@@ -41,7 +41,7 @@ public class Invitation: Sendable {
         return Completable.empty()
     }
 
-    public static func fromSendable(_ sendable: Sendable) -> Invitation {
+    public class func fromSendable(_ sendable: Sendable) -> Invitation {
         return super.fromSendable(sendable)
     }
 

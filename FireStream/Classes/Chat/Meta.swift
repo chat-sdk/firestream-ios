@@ -83,15 +83,15 @@ public class Meta {
         return self
     }
 
-    public static func nameData(_ name: String) -> [String: Any] {
+    public class func nameData(_ name: String) -> [String: Any] {
         return [Keys.Name: name]
     }
 
-    public static func imageURLData(_ imageURL: String) -> [String: Any] {
+    public class func imageURLData(_ imageURL: String) -> [String: Any] {
         return [Keys.ImageURL: imageURL]
     }
 
-    public static func dataData(_ data: [String: Any]) -> [String: Any] {
+    public class func dataData(_ data: [String: Any]) -> [String: Any] {
         return [Keys.Data: data]
     }
 
@@ -112,7 +112,7 @@ public class Meta {
         return data
     }
 
-    internal static func wrap(_ map: [String: Any]) -> [String: Any] {
+    internal class func wrap(_ map: [String: Any]) -> [String: Any] {
         return [Keys.Meta: map]
     }
 
@@ -123,11 +123,11 @@ public class Meta {
         return meta
     }
 
-    public static func from(_ name: String, _ imageURL: String) -> Meta {
+    public class func from(_ name: String, _ imageURL: String) -> Meta {
         return Meta(name, imageURL)
     }
 
-    public static func from(_ name: String, _ imageURL: String, _ data: [String: Any]) -> Meta {
+    public class func from(_ name: String, _ imageURL: String, _ data: [String: Any]) -> Meta {
         return Meta(name, imageURL, data)
     }
 

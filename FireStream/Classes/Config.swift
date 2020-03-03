@@ -22,31 +22,31 @@ public class Config {
             self.seconds = Double(seconds)
         }
 
-        public static func seconds(_ seconds: Int) -> TimePeriod {
+        public class func seconds(_ seconds: Int) -> TimePeriod {
             return TimePeriod(seconds)
         }
 
-        public static func minutes(_ minutes: Int) -> TimePeriod {
+        public class func minutes(_ minutes: Int) -> TimePeriod {
             return seconds(minutes * 60)
         }
 
-        public static func hours(_ hours: Int) -> TimePeriod {
+        public class func hours(_ hours: Int) -> TimePeriod {
             return minutes(hours * 60)
         }
 
-        public static func days(_ days: Int) -> TimePeriod {
+        public class func days(_ days: Int) -> TimePeriod {
             return hours(days * 24)
         }
 
-        public static func weeks(_ weeks: Int) -> TimePeriod {
+        public class func weeks(_ weeks: Int) -> TimePeriod {
             return days(weeks * 7)
         }
 
-        public static func months(_ months: Int) -> TimePeriod {
+        public class func months(_ months: Int) -> TimePeriod {
             return weeks(months * 4)
         }
 
-        public static func infinite() -> TimePeriod {
+        public class func infinite() -> TimePeriod {
             return seconds(-1)
         }
 

@@ -250,7 +250,7 @@ public class FirestoreCoreHandler: FirebaseCoreHandler {
         }
     }
 
-    public static func typeForDocumentChange(_ change: DocumentChange) -> EventType {
+    public class func typeForDocumentChange(_ change: DocumentChange) -> EventType {
         switch change.type {
         case .added:
             return EventType.Added

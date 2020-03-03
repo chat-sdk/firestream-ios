@@ -23,7 +23,7 @@ public class Presence: Sendable {
         return PresenceType(super.getBodyType())
     }
 
-    public static func fromSendable(_ sendable: Sendable) -> Presence {
+    public class func fromSendable(_ sendable: Sendable) -> Presence {
         return super.fromSendable(sendable)
     }
 

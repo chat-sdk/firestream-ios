@@ -21,7 +21,7 @@ public class TypingState: Sendable {
         return TypingStateType(super.getBodyType())
     }
 
-    public static func fromSendable(_ sendable: Sendable) -> TypingState {
+    public class func fromSendable(_ sendable: Sendable) -> TypingState {
         return super.fromSendable(sendable)
     }
 

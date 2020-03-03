@@ -392,7 +392,7 @@ public class Chat: AbstractChat, PChat {
         return FireStreamError("You must be a group member to perform this action")
     }
 
-    public static func create(_ name: String?, _ imageURL: String?, _ data: [String: Any]?, _ users: [FireStreamUser]?) -> Single<Chat> {
+    public class func create(_ name: String?, _ imageURL: String?, _ data: [String: Any]?, _ users: [FireStreamUser]?) -> Single<Chat> {
         guard let firebaseService = Fire.internalApi().getFirebaseService() else {
             return Single.error(Fire.internalApi().getFirebaseServiceNilError())
         }
@@ -446,7 +446,7 @@ public class Chat: AbstractChat, PChat {
         return deleteSendable(messagesPath.child(sendableId))
     }
 
-    public static func from(_ listEvent: FireStreamEvent<ListData>) throws -> Chat {
+    public class func from(_ listEvent: FireStreamEvent<ListData>) throws -> Chat {
         if let change = listEvent.get() {
             return Chat(change.getId(), change.get(Keys.Date) as? Date)
         } else {

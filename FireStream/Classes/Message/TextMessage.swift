@@ -18,9 +18,8 @@ public class TextMessage: Message {
         return body?[Self.TextKey] as? String
     }
 
-    // TODO: is this required?
-    // public static func fromSendable(_ sendable: Sendable) -> TextMessage {
-    //     return super.fromSendable(sendable)
-    // }
+    public override class func fromSendable(_ sendable: Sendable) -> TextMessage {
+         return super.fromSendable(sendable)
+     }
 
 }

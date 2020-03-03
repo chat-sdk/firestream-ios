@@ -21,19 +21,19 @@ public class ConnectionEvent {
         self.type = type
     }
 
-    public static func willConnect() -> ConnectionEvent {
+    public class func willConnect() -> ConnectionEvent {
         return ConnectionEvent(.WillConnect)
     }
 
-    public static func didConnect() -> ConnectionEvent {
+    public class func didConnect() -> ConnectionEvent {
         return ConnectionEvent(.DidConnect)
     }
 
-    public static func willDisconnect() -> ConnectionEvent {
+    public class func willDisconnect() -> ConnectionEvent {
         return ConnectionEvent(.WillDisconnect)
     }
 
-    public static func didDisconnect() -> ConnectionEvent {
+    public class func didDisconnect() -> ConnectionEvent {
         return ConnectionEvent(.DidDisconnect)
     }
 

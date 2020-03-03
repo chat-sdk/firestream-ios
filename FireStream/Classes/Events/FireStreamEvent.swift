@@ -31,15 +31,15 @@ public class FireStreamEvent<T> {
         return self.payload
     }
 
-    public static func added<T>(_ payload: T) -> FireStreamEvent<T> {
+    public class func added<T>(_ payload: T) -> FireStreamEvent<T> {
         return FireStreamEvent<T>(payload, EventType.Added)
     }
 
-    public static func removed<T>(_ payload: T) -> FireStreamEvent<T> {
+    public class func removed<T>(_ payload: T) -> FireStreamEvent<T> {
         return FireStreamEvent<T>(payload, EventType.Removed)
     }
 
-    public static func modified<T>(_ payload: T) -> FireStreamEvent<T> {
+    public class func modified<T>(_ payload: T) -> FireStreamEvent<T> {
         return FireStreamEvent<T>(payload, EventType.Modified)
     }
 

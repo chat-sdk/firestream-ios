@@ -25,7 +25,7 @@ public class BaseType {
         return self.get() == type?.get()
     }
 
-    public static func none<T: BaseType>() -> T {
+    public class func none<T: BaseType>() -> T {
         return T.init("")
     }
 

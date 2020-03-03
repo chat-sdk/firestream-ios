@@ -15,7 +15,7 @@ class Tests: XCTestCase {
 
     let disposeBag = DisposeBag()
 
-    static func authenticate() -> Completable {
+    class func authenticate() -> Completable {
         return Completable.create { emitter in
             Auth.auth().signIn(withEmail: "node@mail.com", password: "pass1234") { (result, error) in
                 if let error = error {
@@ -28,7 +28,7 @@ class Tests: XCTestCase {
         }
     }
 
-    static func connect() -> Completable {
+    class func connect() -> Completable {
         return authenticate().andThen(Completable.create { emitter in
             return Fire.stream().getConnectionEvents().subscribe(onNext: { connectionEvent in
                 if connectionEvent.getType() == .DidConnect {

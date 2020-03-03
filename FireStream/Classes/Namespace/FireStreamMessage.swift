@@ -7,17 +7,16 @@
 
 public class FireStreamMessage: Message {
 
-    public static func fromMessage(_ message: Message) -> FireStreamMessage {
+    public class func fromMessage(_ message: Message) -> FireStreamMessage {
         let firestreamMessage = FireStreamMessage()
         message.copyTo(firestreamMessage)
         return firestreamMessage
     }
 
-    // TODO: is this required?
-    // public static func fromSendable(_ sendable: Sendable) -> FireStreamMessage {
-    //     let message = FireStreamMessage()
-    //     sendable.copyTo(message)
-    //     return message
-    // }
+    public override class func fromSendable(_ sendable: Sendable) -> FireStreamMessage {
+         let message = FireStreamMessage()
+         sendable.copyTo(message)
+         return message
+     }
 
 }

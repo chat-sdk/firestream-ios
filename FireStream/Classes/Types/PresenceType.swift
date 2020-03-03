@@ -12,19 +12,19 @@ public class PresenceType: BaseType {
     public static let ExtendedAway = "xa"
     public static let Available = "available"
 
-    public static func unavailable() -> PresenceType {
+    public class func unavailable() -> PresenceType {
         return PresenceType(Unavailable)
     }
 
-    public static func busy() -> PresenceType {
+    public class func busy() -> PresenceType {
         return PresenceType(Busy)
     }
 
-    public static func extendedAway() -> PresenceType {
+    public class func extendedAway() -> PresenceType {
         return PresenceType(ExtendedAway)
     }
 
-    public static func available() -> PresenceType {
+    public class func available() -> PresenceType {
         return PresenceType(Available)
     }
 
