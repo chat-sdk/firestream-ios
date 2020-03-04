@@ -103,7 +103,7 @@ public class FirestoreCoreHandler: FirebaseCoreHandler {
             do {
                 var query = try Ref.collection(messagesPath) as Query
 
-                query = query.order(by: Keys.Data, descending: false)
+                query = query.order(by: Keys.Date, descending: false)
                 if let fromDate = fromDate {
                     query = query.whereField(Keys.Date, isGreaterThan: fromDate)
                 }
