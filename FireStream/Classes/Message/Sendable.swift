@@ -83,34 +83,34 @@ public class Sendable: BaseMessage {
         return data
     }
 
-    public func convert<T: Sendable>(sendable: Sendable) -> T {
+    public func convert<T: Sendable>(_ sendable: Sendable) -> T {
         let instance = T.init()
         sendable.copyTo(instance)
         return instance
     }
 
     public func toMessage() -> Message {
-        return convert(sendable: self)
+        return convert(self)
     }
 
     public func toTypingState() -> TypingState {
-        return convert(sendable: self)
+        return convert(self)
     }
 
     public func toDeliveryReceipt() -> DeliveryReceipt {
-        return convert(sendable: self)
+        return convert(self)
     }
 
     public func toInvitation() -> Invitation {
-        return convert(sendable: self)
+        return convert(self)
     }
 
     public func toPresence() -> Presence {
-        return convert(sendable: self)
+        return convert(self)
     }
 
     public func toTextMessage() -> TextMessage {
-        return convert(sendable: self)
+        return convert(self)
     }
 
     public func setId(_ id: String?) {
@@ -121,7 +121,7 @@ public class Sendable: BaseMessage {
         return self.id
     }
 
-    public func equals(sendable: Sendable) -> Bool {
+    public func equals(_ sendable: Sendable) -> Bool {
         return self.getId() == sendable.getId()
     }
 
