@@ -420,6 +420,279 @@ class Tests: XCTestCase {
         }
     }
 
+    func messageChat() -> Completable {
+        return Completable.deferred {
+            let messageReceiptId =  "XXX"
+            let messageText =  "Test"
+            let message = TextMessage(messageText)
+
+            let chats = Fire.stream().getChats()
+            
+            if chats.count == 0 {
+                return Completable.error(FSError("Chat doesn't exist"))
+            }
+
+            return Completable.create { emitter in
+                let chat = chats[0]
+
+                chat.getSendableEvents().getErrors().subscribe(
+                    onNext: { emitter(.error($0)) },
+                    onError: { emitter(.error($0)) }
+                ).disposed(by: self.disposeBag)
+
+                var messages = [Message]()
+                var receipts = [DeliveryReceipt]()
+                var typingStates = [TypingState]()
+
+                chat.getSendableEvents().getMessages().allEvents().subscribe(
+                    onNext: { event in
+                        if let payload = event.get() {
+                            messages.append(payload)
+                        }
+                    },
+                    onError: { emitter(.error($0)) }
+                ).disposed(by: self.disposeBag)
+
+                chat.getSendableEvents().getDeliveryReceipts().allEvents().subscribe(
+                    onNext: { event in
+                        if let payload = event.get() {
+                            receipts.append(payload)
+                        }
+                    },
+                    onError: { emitter(.error($0)) }
+                ).disposed(by: self.disposeBag)
+
+                chat.getSendableEvents().getTypingStates().allEvents().subscribe(
+                    onNext: { event in
+                        if let payload = event.get() {
+                            typingStates.append(payload)
+                        }
+                    },
+                    onError: { emitter(.error($0)) }
+                ).disposed(by: self.disposeBag)
+
+                // Send a message
+                chat.send(message).do(onCompleted: {
+                    // The chat should not yet contain the message - messages are only received via events
+                    if chat.getSendables(SendableType.message()).count != 1 {
+                        emitter(.error(FSError("Message not in sendables when it should be")))
+                    } else {
+                        let message = TextMessage.fromSendable(chat.getSendables(SendableType.message())[0])
+                        if message.getText() != messageText {
+                            emitter(.error(FSError("Message text mismatch")))
+                        }
+                    }
+                }).concat(chat.sendTypingIndicator(TypingStateType.typing())).do(onCompleted: {
+                    if chat.getSendables(SendableType.typingState()).count != 1 {
+                        emitter(.error(FSError("Typing state not in sendables when it should be")))
+                    } else {
+                        let state = TypingState.fromSendable((chat.getSendables(SendableType.typingState())[0]))
+                        if !state.getTypingStateType().equals(TypingStateType.typing()) {
+                            emitter(.error(FSError("Typing state type mismatch")))
+                        }
+                    }
+                }).concat(chat.sendDeliveryReceipt(DeliveryReceiptType.received(), messageReceiptId)).do(onCompleted: {
+                    if chat.getSendables(SendableType.deliveryReceipt()).count != 1 {
+                        emitter(.error(FSError("delivery receipt not in sendables when it should be")))
+                    } else {
+                        let receipt = DeliveryReceipt.fromSendable((chat.getSendables(SendableType.deliveryReceipt())[0]))
+                        if !receipt.getDeliveryReceiptType().equals(DeliveryReceiptType.received()) {
+                            emitter(.error(FSError("Delivery receipt type mismatch")))
+                        }
+                        do {
+                            if try receipt.getMessageId() != messageReceiptId {
+                                emitter(.error(FSError("Delivery receipt message id incorrect")))
+                            }
+                        } catch {
+                            emitter(.error(error))
+                        }
+                    }
+                }).subscribe(onError: { emitter(.error($0)) }).disposed(by: self.disposeBag)
+
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                    // Check that the chat now has the message
+
+                    if messages.count != 0 {
+                        let message = TextMessage.fromSendable(messages[0])
+                        if message.getText() != messageText {
+                            emitter(.error(FSError("Message text incorrect")))
+                        }
+                    } else {
+                        emitter(.error(FSError("Chat doesn't contain message")))
+                    }
+
+                    if receipts.count != 0 {
+                        let receipt = DeliveryReceipt.fromSendable(receipts[0])
+                        if !receipt.getDeliveryReceiptType().equals(DeliveryReceiptType.received()) {
+                            emitter(.error(FSError("Delivery receipt type incorrect")))
+                        }
+                        do {
+                            if try receipt.getMessageId() != messageReceiptId {
+                                emitter(.error(FSError("Delivery receipt message id incorrect")))
+                            }
+                        } catch {
+                            emitter(.error(error))
+                        }
+                    } else {
+                        emitter(.error(FSError("Chat doesn't contain delivery receipt")))
+                    }
+
+                    if typingStates.count != 0 {
+                        let state = TypingState.fromSendable(typingStates[0])
+                        if !state.getTypingStateType().equals(TypingStateType.typing()) {
+                            emitter(.error(FSError("Typing state type incorrect")))
+                        }
+                    } else {
+                        emitter(.error(FSError("Chat doesn't contain typing state")))
+                    }
+
+                    // Send 10 messages
+                    var completables = [Completable]()
+                    for i in 0..<10 {
+                        completables.append(chat.sendMessageWithText("\(i)"))
+                    }
+
+                    Completable.concat(completables).subscribe(
+                        onCompleted: {
+                            // The messages should have been delivered by now
+                            // Make a query to get all but the first and last messages in order
+                            let sendables = chat.getSendables()
+                            if sendables.count != 13 {
+                                emitter(.error(FSError("There should be 13 messages and there are not")))
+                            } else {
+                                let fromDate = Date()
+                                guard let toDate = DateComponents(calendar: .current, year: 3000).date else {
+                                    emitter(.error(FSError("Could not create toDate")))
+                                    return
+                                }
+                                chat.loadMoreMessages(fromDate, toDate).subscribe(
+                                    onSuccess: { sendablesAll in
+                                        let allFirst = sendablesAll[0]
+                                        let allSecond = sendablesAll[1]
+                                        let allLast = sendablesAll[sendablesAll.count - 1]
+
+                                        // Check first and last messages
+                                        if allFirst.equals(sendables[0]) {
+                                            emitter(.error(FSError("All first message incorrect")))
+                                        }
+                                        if !allLast.equals(sendables[sendables.count - 1]) {
+                                            emitter(.error(FSError("All last message incorrect")))
+                                        }
+                                        if sendablesAll.count != sendables.count {
+                                            emitter(.error(FSError("All size mismatch")))
+                                        }
+
+                                        let indexOfFirst: Int = 0
+                                        let indexOfLast: Int = sendablesAll.count - 1
+                                        let limit: Int = 5
+
+                                        let fromSendable = sendablesAll[indexOfFirst]
+                                        let toSendable = sendablesAll[indexOfLast]
+
+                                        // Get the date of the second and penultimate
+                                        guard let from = fromSendable.getDate() else {
+                                            emitter(.error(FSError("Could not get fromDate from sendable")))
+                                            return
+                                        }
+                                        guard let to = toSendable.getDate() else {
+                                            emitter(.error(FSError("Could not get toDate from sendable")))
+                                            return
+                                        }
+
+                                        // There type a timing issue here in that the date of the sendable
+                                        // will actually be a Firebase prediction rather than the actual time recorded on the server
+                                        chat.loadMoreMessages(from, to).do(
+                                            onSuccess: { sendablesFromTo in
+                                                if sendablesFromTo.count != 12 {
+                                                    emitter(.error(FSError("From/To Sendable size incorrect")))
+                                                }
+
+                                                let first = sendablesFromTo[0]
+                                                let second = sendablesFromTo[1]
+                                                let last = sendablesFromTo[sendablesFromTo.count - 1]
+
+                                                // First message should be the same as the second overall message
+                                                if !first.equals(allSecond) {
+                                                    emitter(.error(FSError("From/To First message incorrect")))
+                                                }
+                                                if !last.equals(toSendable) {
+                                                    emitter(.error(FSError("From/To Last message incorrect")))
+                                                }
+                                                // Check the first message type on or after the from date
+                                                if first.getDate()!.timeIntervalSince1970 <= from.timeIntervalSince1970 {
+                                                    emitter(.error(FSError("From/To First message type before fro)) time")))
+                                                }
+                                                if last.getDate()!.timeIntervalSince1970 > to.timeIntervalSince1970 {
+                                                    emitter(.error(FSError("From/To Last message type after to time")))
+                                                }
+                                                if second.getDate()!.timeIntervalSince1970 < first.getDate()!.timeIntervalSince1970 {
+                                                    emitter(.error(FSError("From/To Messages order incorrect")))
+                                                }
+                                            }
+                                        ).asCompletable().concat(chat.loadMoreMessagesFrom(from, limit).do(
+                                            onSuccess: { sendablesFrom in
+                                                if sendablesFrom.count != limit {
+                                                    emitter(.error(FSError("From Sendable size incorrect")))
+                                                }
+
+                                                let first = sendablesFrom[0]
+                                                let second = sendablesFrom[1]
+                                                let last = sendablesFrom[sendablesFrom.count - 1]
+
+                                                if !allSecond.equals(first) {
+                                                    emitter(.error(FSError("From First message incorrect")))
+                                                }
+                                                if !sendablesAll[limit].equals(last) {
+                                                    emitter(.error(FSError("From Last message incorrect")))
+                                                }
+
+                                                // Check the first message type on or after the from date
+                                                if first.getDate()!.timeIntervalSince1970 <= from.timeIntervalSince1970 {
+                                                    emitter(.error(FSError("From First message type before from time")))
+                                                }
+                                                if second.getDate()!.timeIntervalSince1970 < first.getDate()!.timeIntervalSince1970 {
+                                                    emitter(.error(FSError("From Messages order incorrect")))
+                                                }
+                                            }
+                                        ).asCompletable()).concat(chat.loadMoreMessagesTo(to, limit).do(
+                                            onSuccess: { sendablesTo in
+                                                let first = sendablesTo[0]
+                                                let second = sendablesTo[1]
+                                                let last = sendablesTo[sendablesTo.count - 1]
+
+                                                if sendablesTo.count != limit {
+                                                    emitter(.error(FSError("To Sendable size incorrect")))
+                                                }
+                                                if !first.equals(sendablesAll[sendablesAll.count - limit]) {
+                                                    emitter(.error(FSError("To First message incorrect")))
+                                                }
+                                                if !toSendable.equals(last) {
+                                                    emitter(.error(FSError("To Last message incorrect")))
+                                                }
+                                                if last.getDate()!.timeIntervalSince1970 > to.timeIntervalSince1970 {
+                                                    emitter(.error(FSError("To Last message type after to time")))
+                                                }
+                                                if second.getDate()!.timeIntervalSince1970 < first.getDate()!.timeIntervalSince1970 {
+                                                    emitter(.error(FSError("To Messages order incorrect")))
+                                                }
+                                            }
+                                        ).asCompletable()).subscribe(
+                                            onCompleted: { emitter(.completed) },
+                                            onError: { emitter(.error($0)) }
+                                        ).disposed(by: self.disposeBag)
+                                    },
+                                    onError: { emitter(.error($0)) }
+                                ).disposed(by: self.disposeBag)
+                            }
+                        },
+                        onError: { emitter(.error($0)) }
+                    ).disposed(by: self.disposeBag)
+                }
+                return Disposables.create()
+            }
+        }
+    }
+
     func test() {
         let expectation = XCTestExpectation(description: "Perform all tests")
         Self.connect()
@@ -436,10 +709,15 @@ class Tests: XCTestCase {
             .do(onError: { XCTFail($0.localizedDescription) })
             .andThen(modifyChat())
             .do(onError: { XCTFail($0.localizedDescription) })
-            .subscribe(onCompleted: expectation.fulfill)
+            .andThen(messageChat())
+            .do(onError: { XCTFail($0.localizedDescription) })
+            .subscribe(
+                onCompleted: expectation.fulfill,
+                onError: { XCTFail($0.localizedDescription) }
+            )
             .disposed(by: disposeBag)
 
-        wait(for: [expectation], timeout: 16.0)
+        wait(for: [expectation], timeout: 30.0)
     }
 
 }
