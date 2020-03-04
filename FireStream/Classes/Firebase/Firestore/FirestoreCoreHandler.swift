@@ -180,15 +180,19 @@ public class FirestoreCoreHandler: FirebaseCoreHandler {
      * @param newerThan only listen for messages after this date
      * @return a events of message results
      */
-    public func messagesOn(_ messagesPath: Path, _ newerThan: Date, limit: Int) -> Observable<FireStreamEvent<Sendable>> {
+    public override func messagesOn(_ messagesPath: Path, _ newerThan: Date?, _ limit: Int?) -> Observable<FireStreamEvent<Sendable>> {
         return Single<Query>.create { emitter in
             do {
                 var query = try Ref.collection(messagesPath) as Query
 
                 query = query.order(by: Keys.Date, descending: false)
-                query = query.whereField(Keys.Date, isGreaterThan: newerThan)
-                query.limit(to: limit)
-
+                if let newerThan = newerThan {
+                    query = query.whereField(Keys.Date, isGreaterThan: newerThan)
+                }
+                if let limit = limit {
+                    query = query.limit(to: limit)
+                }
+  
                 emitter(.success(query))
             } catch {
                 emitter(.error(error))
