@@ -10,24 +10,22 @@ import FirebaseFirestore
 
 public class RxFirestore {
 
-    internal var lr: ListenerRegistration?
-
     public func on(_ ref: DocumentReference) -> Observable<DocumentSnapshot> {
         return Observable.create { emitter in
-            self.lr = ref.addSnapshotListener({ (snapshot, error) in
+            let lr = ref.addSnapshotListener({ (snapshot, error) in
                 if let error = error {
                     emitter.onError(error)
                 } else if let snapshot = snapshot {
                     emitter.onNext(snapshot)
                 }
             })
-            return Disposables.create(with: self.dispose)
+            return Disposables.create { lr.remove() }
         }
     }
 
     public func on(_ ref: Query) -> Observable<DocumentChange> {
         return Observable.create { emitter in
-            self.lr = ref.addSnapshotListener({ (snapshot, error) in
+            let lr = ref.addSnapshotListener({ (snapshot, error) in
                 if let error = error {
                     emitter.onError(error)
                 } else if let snapshot = snapshot {
@@ -36,7 +34,7 @@ public class RxFirestore {
                     }
                 }
             })
-            return Disposables.create()
+            return Disposables.create { lr.remove() }
         }
     }
 
@@ -102,32 +100,28 @@ public class RxFirestore {
 
     public func get(_ ref: Query) -> Single<QuerySnapshot?> {
         return Single.create { emitter -> Disposable in
-            ref.getDocuments { (snapsot, error) in
+            let lr = ref.addSnapshotListener { (snapsot, error) in
                 if let error = error {
                     emitter(.error(error))
-                } else if let snapsot = snapsot, !snapsot.isEmpty {
-                    emitter(.success(snapsot))
+                } else if let snapsot = snapsot {
+                    emitter(.success(!snapsot.isEmpty ? snapsot : nil))
                 }
             }
-            return Disposables.create()
+            return Disposables.create { lr.remove() }
         }
     }
 
     public func get(_ ref: DocumentReference) -> Single<DocumentSnapshot?> {
         return Single.create { emitter -> Disposable in
-            ref.addSnapshotListener { (snapsot, error) in
+            let lr = ref.addSnapshotListener { (snapsot, error) in
                 if let error = error {
                     emitter(.error(error))
-                } else if let snapsot = snapsot, snapsot.exists && snapsot.data() != nil {
-                    emitter(.success(snapsot))
+                } else if let snapsot = snapsot {
+                    emitter(.success(snapsot.exists && snapsot.data() != nil ? snapsot : nil))
                 }
             }
-            return Disposables.create()
+            return Disposables.create { lr.remove() }
         }
-    }
-
-    public func dispose() {
-        lr?.remove()
     }
 
 }
