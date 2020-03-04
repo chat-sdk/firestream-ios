@@ -107,7 +107,7 @@ public class FirebaseCoreHandler {
      * @return a events of message results
      */
     public func messagesOn(_ messagesPath: Path, _ newerThan: Date?, _ limit: Int?) -> Observable<FireStreamEvent<Sendable>> {
-        return Single.just(FireStreamEvent(.Added)).asObservable()
+        return Single.just(FireStreamEvent(.None)).asObservable()
     }
 
     /**
