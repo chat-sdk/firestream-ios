@@ -391,12 +391,7 @@ public class AbstractChat: PAbstractChat {
     }
 
     public func getSendable(_ id: String) -> Sendable? {
-        for sendable in self.sendables {
-            if sendable.getId() == id {
-                return sendable
-            }
-        }
-        return nil
+        return sendables.first { $0.id == id }
     }
 
     /**
