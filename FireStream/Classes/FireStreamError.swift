@@ -9,9 +9,10 @@ import Foundation
 
 public class FireStreamError: NSError {
 
-    public required init(_ message: String) {
+    public required init(_ message: String, _ file: String = #file, _ line: Int = #line) {
+        let filename = (file as NSString).lastPathComponent
         super.init(domain: "", code: 0, userInfo: [
-            NSLocalizedDescriptionKey: message
+            NSLocalizedDescriptionKey: "\(filename):\(line) \(message)"
         ])
     }
 
