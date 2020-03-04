@@ -560,7 +560,7 @@ class Tests: XCTestCase {
                             if sendables.count != 13 {
                                 emitter(.error(FSError("There should be 13 messages and there are not")))
                             } else {
-                                let fromDate = Date()
+                                let fromDate = Date(timeIntervalSince1970: 0)
                                 guard let toDate = DateComponents(calendar: .current, year: 3000).date else {
                                     emitter(.error(FSError("Could not create toDate")))
                                     return
