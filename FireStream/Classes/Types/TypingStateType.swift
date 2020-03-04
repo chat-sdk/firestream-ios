@@ -13,8 +13,8 @@ public class TypingStateType: BaseType {
         return TypingStateType(Typing)
     }
 
-    public class func none() -> TypingStateType {
-        return super.none()
+    public func equals(_ type: TypingStateType?) -> Bool {
+        return self.get() == type?.get()
     }
 
 }

@@ -19,4 +19,8 @@ public class ContactType: BaseType {
         return data
     }
 
+    public func equals(_ type: ContactType?) -> Bool {
+        return self.get() == type?.get()
+    }
+
 }

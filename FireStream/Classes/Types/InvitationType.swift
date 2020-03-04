@@ -13,4 +13,8 @@ public class InvitationType: BaseType {
         return InvitationType(Chat)
     }
 
+    public func equals(_ type: InvitationType?) -> Bool {
+        return self.get() == type?.get()
+    }
+
 }

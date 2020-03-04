@@ -28,4 +28,8 @@ public class PresenceType: BaseType {
         return PresenceType(Available)
     }
 
+    public func equals(_ type: PresenceType?) -> Bool {
+        return self.get() == type?.get()
+    }
+
 }

@@ -150,4 +150,8 @@ public class RoleType: BaseType {
         return map
     }
 
+    public func equals(_ type: RoleType?) -> Bool {
+        return self.get() == type?.get()
+    }
+
 }

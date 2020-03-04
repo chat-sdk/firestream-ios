@@ -33,4 +33,8 @@ public class SendableType: BaseType {
         return SendableType(Invitation)
     }
 
+    public func equals(_ type: SendableType?) -> Bool {
+        return self.get() == type?.get()
+    }
+
 }

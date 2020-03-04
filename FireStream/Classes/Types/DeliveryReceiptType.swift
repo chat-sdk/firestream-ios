@@ -18,4 +18,8 @@ public class DeliveryReceiptType: BaseType {
         return DeliveryReceiptType(Read)
     }
 
+    public func equals(_ type: DeliveryReceiptType?) -> Bool {
+        return self.get() == type?.get()
+    }
+
 }
