@@ -8,7 +8,7 @@
 import RxSwift
 import FirebaseDatabase
 
-class RxRealtime: NSObject {
+public class RxRealtime: NSObject {
 
     public class DocumentChange {
         let snapshot: DataSnapshot
