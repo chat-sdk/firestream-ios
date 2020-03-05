@@ -12,7 +12,7 @@ public class FirestoreCoreHandler: FirebaseCoreHandler {
 
     public override func listChangeOn(_ path: Path) -> Observable<FireStreamEvent<ListData>> {
         do {
-            let ref = try Ref.collection(path)
+            let ref = try RefFirestore.collection(path)
             return RxFirestore().on(ref).flatMap { change -> Maybe<FireStreamEvent<ListData>> in
                 let d = change.document
                 if d.exists {
@@ -28,7 +28,7 @@ public class FirestoreCoreHandler: FirebaseCoreHandler {
 
     public override func deleteSendable(_ messagesPath: Path) -> Completable {
         do {
-            let ref = try Ref.document(messagesPath)
+            let ref = try RefFirestore.document(messagesPath)
             return RxFirestore().delete(ref)
         } catch {
             return Completable.error(error)
@@ -37,7 +37,7 @@ public class FirestoreCoreHandler: FirebaseCoreHandler {
 
     public override func send(_ messagesPath: Path, _ sendable: Sendable, _ newId: Consumer<String>?) -> Completable {
         do {
-            let ref = try Ref.collection(messagesPath)
+            let ref = try RefFirestore.collection(messagesPath)
             return RxFirestore().add(ref, sendable.toData(), newId).asCompletable()
         } catch {
             return Completable.error(error)
@@ -47,8 +47,8 @@ public class FirestoreCoreHandler: FirebaseCoreHandler {
     public override func addUsers(_ path: Path, _ dataProvider: FireStreamUser.DataProvider, _ users: [FireStreamUser]) -> Completable {
         return Single.create { emitter in
             do {
-                let ref = try Ref.collection(path)
-                let batch = Ref.db().batch()
+                let ref = try RefFirestore.collection(path)
+                let batch = RefFirestore.db().batch()
 
                 for u in users {
                     let docRef = ref.document(u.getId())
@@ -65,8 +65,8 @@ public class FirestoreCoreHandler: FirebaseCoreHandler {
     public override func updateUsers(_ path: Path, _ dataProvider: FireStreamUser.DataProvider, _ users: [FireStreamUser]) -> Completable {
         return Single.create { emitter in
             do {
-                let ref = try Ref.collection(path)
-                let batch = Ref.db().batch()
+                let ref = try RefFirestore.collection(path)
+                let batch = RefFirestore.db().batch()
 
                 for u in users {
                     let docRef = ref.document(u.getId())
@@ -83,8 +83,8 @@ public class FirestoreCoreHandler: FirebaseCoreHandler {
     public override func removeUsers(_ path: Path, _ users: [FireStreamUser]) -> Completable {
         return Single.create { emitter in
             do {
-                let ref = try Ref.collection(path)
-                let batch = Ref.db().batch()
+                let ref = try RefFirestore.collection(path)
+                let batch = RefFirestore.db().batch()
 
                 for u in users {
                     let docRef = ref.document(u.getId())
@@ -101,7 +101,7 @@ public class FirestoreCoreHandler: FirebaseCoreHandler {
     public override func loadMoreMessages(_ messagesPath: Path, _ fromDate: Date?, _ toDate: Date?, _ limit: Int?) -> Single<[Sendable]> {
         return Single<Query>.create { emitter in
             do {
-                var query = try Ref.collection(messagesPath) as Query
+                var query = try RefFirestore.collection(messagesPath) as Query
 
                 query = query.order(by: Keys.Date, descending: false)
                 if let fromDate = fromDate {
@@ -147,7 +147,7 @@ public class FirestoreCoreHandler: FirebaseCoreHandler {
         return Single<Query>.create { emitter in
             do {
                 if let userId = Fire.stream().currentUserId() {
-                    var query = try Ref.collection(messagesPath) as Query
+                    var query = try RefFirestore.collection(messagesPath) as Query
                     query = query.whereField(Keys.From, isEqualTo: userId)
                     query = query.order(by: Keys.Date, descending: true)
                     query = query.limit(to: 1)
@@ -183,7 +183,7 @@ public class FirestoreCoreHandler: FirebaseCoreHandler {
     public override func messagesOn(_ messagesPath: Path, _ newerThan: Date?, _ limit: Int?) -> Observable<FireStreamEvent<Sendable>> {
         return Single<Query>.create { emitter in
             do {
-                var query = try Ref.collection(messagesPath) as Query
+                var query = try RefFirestore.collection(messagesPath) as Query
 
                 query = query.order(by: Keys.Date, descending: false)
                 if let newerThan = newerThan {
@@ -269,7 +269,7 @@ public class FirestoreCoreHandler: FirebaseCoreHandler {
 
     public override func mute(_ path: Path, _ data: [String: Any]) -> Completable {
         do {
-            let ref = try Ref.document(path)
+            let ref = try RefFirestore.document(path)
             return RxFirestore().set(ref, data)
         } catch {
             return Completable.error(error)
@@ -278,7 +278,7 @@ public class FirestoreCoreHandler: FirebaseCoreHandler {
 
     public override func unmute(_ path: Path) -> Completable {
         do {
-            let ref = try Ref.document(path)
+            let ref = try RefFirestore.document(path)
             return RxFirestore().delete(ref)
         } catch {
             return Completable.error(error)

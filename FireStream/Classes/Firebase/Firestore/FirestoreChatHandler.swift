@@ -12,7 +12,7 @@ public class FirestoreChatHandler: FirebaseChatHandler {
 
     public override func leaveChat(_ chatId: String) -> Completable {
         do {
-            let ref = try Ref.document(Paths.userGroupChatPath(chatId))
+            let ref = try RefFirestore.document(Paths.userGroupChatPath(chatId))
             return RxFirestore().delete(ref)
         } catch {
             return Completable.error(error)
@@ -21,7 +21,7 @@ public class FirestoreChatHandler: FirebaseChatHandler {
 
     public override func joinChat(_ chatId: String) -> Completable {
         do {
-            let ref = try Ref.document(Paths.userGroupChatPath(chatId))
+            let ref = try RefFirestore.document(Paths.userGroupChatPath(chatId))
             return RxFirestore().set(ref, FireStreamUser.dateDataProvider().data(nil))
         } catch {
             return Completable.error(error)
@@ -33,7 +33,7 @@ public class FirestoreChatHandler: FirebaseChatHandler {
         chatMetaPath?.normalizeForDocument()
 
         do {
-            let ref = try Ref.document(chatMetaPath)
+            let ref = try RefFirestore.document(chatMetaPath)
             return RxFirestore().update(ref, [
                 chatMetaPath?.dotPath(key): value
             ])
@@ -44,7 +44,7 @@ public class FirestoreChatHandler: FirebaseChatHandler {
 
     public override func metaOn(_ chatId: String) -> Observable<Meta> {
         do {
-            let ref = try Ref.document(Paths.chatPath(chatId))
+            let ref = try RefFirestore.document(Paths.chatPath(chatId))
             return RxFirestore().on(ref).map { snapshot in
                 let meta = Meta()
 
@@ -78,7 +78,7 @@ public class FirestoreChatHandler: FirebaseChatHandler {
 
     public override func add(_ data: [String: Any], _ newId: Consumer<String>?) -> Single<String> {
         do {
-            let ref = try Ref.collection(Paths.chatsPath())
+            let ref = try RefFirestore.collection(Paths.chatsPath())
             return RxFirestore().add(ref, data, newId)
         } catch {
             return Single.error(error)
@@ -87,7 +87,7 @@ public class FirestoreChatHandler: FirebaseChatHandler {
 
     public override func delete(_ chatId: String) -> Completable {
         do {
-            let ref = try Ref.document(Paths.chatPath(chatId))
+            let ref = try RefFirestore.document(Paths.chatPath(chatId))
             return RxFirestore().delete(ref)
         } catch {
             return Completable.error(error)

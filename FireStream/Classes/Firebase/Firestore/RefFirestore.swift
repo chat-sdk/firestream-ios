@@ -1,5 +1,5 @@
 //
-//  Ref.swift
+//  RefFirestore.swift
 //  FireStream
 //
 //  Created by Pepe Becker on 2/10/20.
@@ -7,7 +7,7 @@
 
 import FirebaseFirestore
 
-public class Ref {
+public class RefFirestore {
 
     public class func collection(_ path: Path?) throws -> CollectionReference {
         guard let path = path else {
