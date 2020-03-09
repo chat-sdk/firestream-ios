@@ -54,8 +54,7 @@ public class FireStream: AbstractChat, PFireStream {
             self.firebaseService = FirestoreService()
         }
         if self.config?.database == .Realtime {
-            // TODO: create RealtimeService
-            // self.firebaseService = RealtimeService()
+            self.firebaseService = RealtimeService()
         }
 
         self.markReceivedFilter = { message in

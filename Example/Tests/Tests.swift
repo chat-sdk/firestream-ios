@@ -572,7 +572,7 @@ class Tests: XCTestCase {
                                         let allLast = sendablesAll[sendablesAll.count - 1]
 
                                         // Check first and last messages
-                                        if allFirst.equals(sendables[0]) {
+                                        if !allFirst.equals(sendables[0]) {
                                             emitter(.error(FSError("All first message incorrect")))
                                         }
                                         if !allLast.equals(sendables[sendables.count - 1]) {
@@ -599,7 +599,7 @@ class Tests: XCTestCase {
                                             return
                                         }
 
-                                        // There type a timing issue here in that the date of the sendable
+                                        // There is a timing issue here in that the date of the sendable
                                         // will actually be a Firebase prediction rather than the actual time recorded on the server
                                         chat.loadMoreMessages(from, to).do(
                                             onSuccess: { sendablesFromTo in

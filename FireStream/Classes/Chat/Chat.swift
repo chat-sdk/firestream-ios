@@ -16,9 +16,9 @@ public class Chat: AbstractChat, PChat {
     internal var users = [FireStreamUser]()
     internal var userEvents = MultiQueueSubject<FireStreamEvent<FireStreamUser>>()
 
-    internal var nameChangedEvents = BehaviorSubject<String>(value: "")
-    internal var imageURLChangedEvents = BehaviorSubject<String>(value: "")
-    internal var customDataChangedEvents = BehaviorSubject<[String: Any]>(value: [:])
+    internal var nameChangedEvents = BehaviorSubject<String?>(value: nil)
+    internal var imageURLChangedEvents = BehaviorSubject<String?>(value: nil)
+    internal var customDataChangedEvents = BehaviorSubject<[String: Any]?>(value: nil)
 
     public init(_ id: String) {
         self.id = id
@@ -274,15 +274,33 @@ public class Chat: AbstractChat, PChat {
     }
 
     public func getNameChangeEvents() -> Observable<String> {
-        return nameChangedEvents
+        return nameChangedEvents.flatMap({ name -> Maybe<String> in
+            if let name = name {
+                return Maybe.just(name)
+            } else {
+                return Maybe.empty()
+            }
+        })
     }
 
     public func getImageURLChangeEvents() -> Observable<String> {
-        return imageURLChangedEvents
+        return imageURLChangedEvents.flatMap({ imageURL -> Maybe<String> in
+            if let imageURL = imageURL {
+                return Maybe.just(imageURL)
+            } else {
+                return Maybe.empty()
+            }
+        })
     }
 
     public func getCustomDataChangedEvents() -> Observable<[String: Any]> {
-        return customDataChangedEvents
+        return customDataChangedEvents.flatMap({ customData -> Maybe<[String: Any]> in
+            if let customData = customData {
+                return Maybe.just(customData)
+            } else {
+                return Maybe.empty()
+            }
+        })
     }
 
     public func getUserEvents() -> MultiQueueSubject<FireStreamEvent<FireStreamUser>> {

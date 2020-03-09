@@ -27,7 +27,7 @@ public class RxRealtime: NSObject {
 
     public func on(_ ref: DatabaseQuery) -> Observable<DocumentChange> {
         return Observable.create { emitter in
-            let o = ref.observe(.childChanged, with: { snapshot in
+            let o = ref.observe(.value, with: { snapshot in
                 if snapshot.exists() && snapshot.value != nil {
                     emitter.onNext(DocumentChange(snapshot))
                 }
@@ -41,10 +41,10 @@ public class RxRealtime: NSObject {
             let o1 = ref.observe(.childAdded, with: { snapshot in
                 emitter.onNext(DocumentChange(snapshot, EventType.Added))
             }, withCancel: emitter.onError)
-            let o2 = ref.observe(.childAdded, with: { snapshot in
+            let o2 = ref.observe(.childRemoved, with: { snapshot in
                 emitter.onNext(DocumentChange(snapshot, EventType.Removed))
             }, withCancel: emitter.onError)
-            let o3 = ref.observe(.childAdded, with: { snapshot in
+            let o3 = ref.observe(.childChanged, with: { snapshot in
                 emitter.onNext(DocumentChange(snapshot, EventType.Modified))
             }, withCancel: emitter.onError)
             return Disposables.create {
@@ -126,7 +126,7 @@ public class RxRealtime: NSObject {
     public func get(_ ref: DatabaseQuery) -> Single<DataSnapshot?> {
         ref.keepSynced(true)
         return Single.create { emitter in
-            ref.observeSingleEvent(of: .childChanged, with: { snapshot in
+            ref.observeSingleEvent(of: .value, with: { snapshot in
                 if snapshot.exists() && snapshot.value != nil {
                     emitter(.success(snapshot))
                 } else {

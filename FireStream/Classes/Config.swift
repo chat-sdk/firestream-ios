@@ -146,7 +146,7 @@ public class Config {
     /**
      * Which database to use - Firestore or Realtime database
      */
-    public var database: DatabaseType = .Firestore
+    public var database: DatabaseType = .Realtime
 
     /**
      * Should debug log messages be shown?
