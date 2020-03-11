@@ -1,16 +1,6 @@
 use_frameworks!
-target 'FireStream Demo' do
-  pod 'FireStream', :path => '../'
-  pod 'Firebase/Auth'
-  pod 'Firebase/Firestore'
-  pod 'Firebase/Database'
-
-end
+platform :ios, '13.0'
 
 target 'FireStream_Tests' do
   pod 'FireStream', :path => '../'
-  pod 'Firebase/Auth'
-  pod 'Firebase/Firestore'
-  pod 'Firebase/Database'
-  
 end
