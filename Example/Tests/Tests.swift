@@ -560,7 +560,7 @@ class Tests: XCTestCase {
                             if sendables.count != 13 {
                                 emitter(.error(FSError("There should be 13 messages and there are not")))
                             } else {
-                                let fromDate = Date(timeIntervalSince1970: 0)
+                                let fromDate = Date(timestamp: 0)
                                 guard let toDate = DateComponents(calendar: .current, year: 3000).date else {
                                     emitter(.error(FSError("Could not create toDate")))
                                     return
@@ -619,13 +619,13 @@ class Tests: XCTestCase {
                                                     emitter(.error(FSError("From/To Last message incorrect")))
                                                 }
                                                 // Check the first message type on or after the from date
-                                                if first.getDate()!.timeIntervalSince1970 <= from.timeIntervalSince1970 {
+                                                if first.getDate()!.timestamp <= from.timestamp {
                                                     emitter(.error(FSError("From/To First message type before fro)) time")))
                                                 }
-                                                if last.getDate()!.timeIntervalSince1970 > to.timeIntervalSince1970 {
+                                                if last.getDate()!.timestamp > to.timestamp {
                                                     emitter(.error(FSError("From/To Last message type after to time")))
                                                 }
-                                                if second.getDate()!.timeIntervalSince1970 < first.getDate()!.timeIntervalSince1970 {
+                                                if second.getDate()!.timestamp < first.getDate()!.timestamp {
                                                     emitter(.error(FSError("From/To Messages order incorrect")))
                                                 }
                                             }
@@ -647,10 +647,10 @@ class Tests: XCTestCase {
                                                 }
 
                                                 // Check the first message type on or after the from date
-                                                if first.getDate()!.timeIntervalSince1970 <= from.timeIntervalSince1970 {
+                                                if first.getDate()!.timestamp <= from.timestamp {
                                                     emitter(.error(FSError("From First message type before from time")))
                                                 }
-                                                if second.getDate()!.timeIntervalSince1970 < first.getDate()!.timeIntervalSince1970 {
+                                                if second.getDate()!.timestamp < first.getDate()!.timestamp {
                                                     emitter(.error(FSError("From Messages order incorrect")))
                                                 }
                                             }
@@ -669,10 +669,10 @@ class Tests: XCTestCase {
                                                 if !toSendable.equals(last) {
                                                     emitter(.error(FSError("To Last message incorrect")))
                                                 }
-                                                if last.getDate()!.timeIntervalSince1970 > to.timeIntervalSince1970 {
+                                                if last.getDate()!.timestamp > to.timestamp {
                                                     emitter(.error(FSError("To Last message type after to time")))
                                                 }
-                                                if second.getDate()!.timeIntervalSince1970 < first.getDate()!.timeIntervalSince1970 {
+                                                if second.getDate()!.timestamp < first.getDate()!.timestamp {
                                                     emitter(.error(FSError("To Messages order incorrect")))
                                                 }
                                             }

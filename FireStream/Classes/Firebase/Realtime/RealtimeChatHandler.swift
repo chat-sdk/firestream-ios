@@ -44,7 +44,7 @@ public class RealtimeChatHandler: FirebaseChatHandler {
                     _ = meta.setName(name)
                 }
                 if snapshot.hasChild(Keys.Created), let time = snapshot.childSnapshot(forPath: Keys.Created).value as? TimeInterval {
-                    _ = meta.setCreated(Date(timeIntervalSince1970: time))
+                    _ = meta.setCreated(Date(timestamp: time))
                 }
                 if snapshot.hasChild(Keys.ImageURL), let imageURL = snapshot.childSnapshot(forPath: Keys.ImageURL).value as? String {
                     _ = meta.setImageURL(imageURL)

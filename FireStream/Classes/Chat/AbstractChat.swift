@@ -133,7 +133,7 @@ public class AbstractChat: PAbstractChat {
 
     public func loadMoreMessagesBefore(_ toDate: Date, _ limit: Int) -> Single<[Sendable]> {
         return Single.deferred {
-            let before = Date(timeIntervalSince1970: toDate.timeIntervalSince1970 - 1)
+            let before = Date(timestamp: toDate.timestamp - 1)
             return self.loadMoreMessagesTo(before, limit)
         }
     }
@@ -176,13 +176,13 @@ public class AbstractChat: PAbstractChat {
         return send(messagesPath, sendable, nil)
     }
 
-        /**
-         * Send a errorMessage to a messages ref
-         * @param messagesPath
-         * @param sendable item to be sent
-         * @param newId the ID of the new errorMessage
-         * @return single containing errorMessage id
-         */
+    /**
+     * Send a errorMessage to a messages ref
+     * @param messagesPath
+     * @param sendable item to be sent
+     * @param newId the ID of the new errorMessage
+     * @return single containing errorMessage id
+     */
     public func send(_ messagesPath: Path?, _ sendable: Sendable, _ newId: Consumer<String>?) -> Completable {
         guard let firebaseService = Fire.internalApi().getFirebaseService() else {
             return Completable.error(Fire.internalApi().getFirebaseServiceNilError())
@@ -362,7 +362,7 @@ public class AbstractChat: PAbstractChat {
             return
         }
 
-        debug("Sendable: \(sendable.getType() ) \(sendable.getId()), date: \(sendable.getDate()?.timeIntervalSince1970)")
+        debug("Sendable: \(sendable.getType() ) \(sendable.getId()), date: \(sendable.getDate()?.timestamp)")
 
         // In general, we are mostly interested when messages are added
         if sendable.isType(SendableType.message()) {

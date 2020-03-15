@@ -210,7 +210,7 @@ public class FireStream: AbstractChat, PFireStream {
                     if let date = data[Keys.Date] as? Date {
                         self.muted[id] = date
                     } else if let interval = data[Keys.Date] as? TimeInterval {
-                        self.muted[id] = Date(timeIntervalSince1970: interval)
+                        self.muted[id] = Date(timestamp: interval)
                     }
                 }
             }

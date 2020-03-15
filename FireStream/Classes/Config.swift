@@ -52,9 +52,9 @@ public class Config {
 
         public func getDate() -> Date {
             if seconds < 0 {
-                return Date(timeIntervalSince1970: 0)
+                return Date(timestamp: 0)
             } else {
-                return Date(timeIntervalSince1970: (Date().timeIntervalSince1970 - seconds * 1000))
+                return Date(timeIntervalSince1970: (Date().timeIntervalSince1970 - seconds))
             }
         }
     }

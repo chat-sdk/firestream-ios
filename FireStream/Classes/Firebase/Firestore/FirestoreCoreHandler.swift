@@ -17,7 +17,8 @@ public class FirestoreCoreHandler: FirebaseCoreHandler {
                 let d = change.document
                 if d.exists {
                     let payload = ListData(d.documentID, d.data(with: .estimate))
-                    return Maybe.just(FireStreamEvent(payload, Self.typeForDocumentChange(change)))
+                    let event = FireStreamEvent(payload, Self.typeForDocumentChange(change))
+                    return Maybe.just(event)
                 }
                 return Maybe.empty()
             }
@@ -171,7 +172,7 @@ public class FirestoreCoreHandler: FirebaseCoreHandler {
                     }
                 }
             }
-            return Date(timeIntervalSince1970: 0)
+            return Date(timestamp: 0)
         }
     }
 
@@ -203,7 +204,8 @@ public class FirestoreCoreHandler: FirebaseCoreHandler {
                 let docSnapshot = docChange.document
                 if docSnapshot.exists {
                     let sendable = self.sendableFromSnapshot(docSnapshot)
-                    return Maybe.just(FireStreamEvent(sendable, Self.typeForDocumentChange(docChange)))
+                    let event = FireStreamEvent(sendable, Self.typeForDocumentChange(docChange))
+                    return Maybe.just(event)
                 }
                 return Maybe.empty()
             }

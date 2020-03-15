@@ -46,11 +46,11 @@ class RealtimeCoreHandler: FirebaseCoreHandler {
             query = query.queryOrdered(byChild: Keys.Date)
 
             if let fromDate = fromDate {
-                query = query.queryStarting(atValue: fromDate.timeIntervalSince1970, childKey: Keys.Date)
+                query = query.queryStarting(atValue: fromDate.timestamp, childKey: Keys.Date)
             }
 
             if let toDate = toDate {
-                query = query.queryEnding(atValue: toDate.timeIntervalSince1970, childKey: Keys.Date)
+                query = query.queryEnding(atValue: toDate.timestamp, childKey: Keys.Date)
             }
 
             if let limit = limit {
@@ -88,14 +88,14 @@ class RealtimeCoreHandler: FirebaseCoreHandler {
 
             emitter(.success(query))
             return Disposables.create()
-        }.flatMap { RxRealtime().get($0) }.map { snapshot in
+        }.flatMap { RxRealtime().get($0).map { snapshot in
             if let snapshot = snapshot {
                 if let date = self.sendableFromSnapshot(snapshot).getDate() {
                     return date
                 }
             }
-            return Date(timeIntervalSince1970: 0)
-        }
+            return Date(timestamp: 0)
+        }}
     }
 
     public func sendableFromSnapshot(_ snapshot: DataSnapshot) -> Sendable {
@@ -106,7 +106,7 @@ class RealtimeCoreHandler: FirebaseCoreHandler {
             sendable.setFrom(from)
         }
         if snapshot.hasChild(Keys.Date), let timestamp = snapshot.childSnapshot(forPath: Keys.Date).value as? Double {
-            sendable.setDate(Date(timeIntervalSince1970: timestamp))
+            sendable.setDate(Date(timestamp: timestamp))
         } else {
             print("Coult not set data")
         }
@@ -125,7 +125,7 @@ class RealtimeCoreHandler: FirebaseCoreHandler {
 
             query = query.queryOrdered(byChild: Keys.Date)
             if let newerThan = newerThan {
-                query = query.queryStarting(atValue: newerThan.timeIntervalSince1970, childKey: Keys.Date)
+                query = query.queryStarting(atValue: newerThan.timestamp, childKey: Keys.Date)
             }
             if let limit = limit {
                 query = query.queryLimited(toLast: UInt(limit))
